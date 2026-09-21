@@ -105,7 +105,8 @@ body{margin:0; background:var(--paper); color:var(--ink);
 .tab.ingroup{background:color-mix(in srgb, var(--acc) 7%, transparent)}
 .tab.child{padding-left:4px}
 .tab.folded{opacity:.45}
-.tab .t-ic{font-size:10px; color:var(--acc)}
+.tab .t-ic{font-size:10px; color:var(--kc, var(--acc))}
+.tab.child{border-left:2px solid color-mix(in srgb, var(--kc) 55%, transparent)}
 .tab .t-ic.run{color:var(--green); animation:pulse 1.4s ease-in-out infinite}
 @keyframes pulse{50%{opacity:.25}}
 .tab .t-nm{overflow:hidden; text-overflow:ellipsis}
@@ -124,23 +125,32 @@ body{margin:0; background:var(--paper); color:var(--ink);
 .panes{flex:1; display:flex; min-height:0; min-width:0}
 .pane{display:flex; flex-direction:column; min-width:0; min-height:0; position:relative}
 .pane.parent{flex:0 0 auto; border-right:1px solid var(--line)}
-.kids{flex:1; display:flex; flex-direction:column; min-width:0; min-height:0}
-.kids .pane{flex:1; border-bottom:1px solid var(--line)}
-.kids .pane:last-child{border-bottom:0}
+.kids{flex:1; display:flex; flex-direction:column; min-width:0; min-height:0; gap:7px; padding:7px 7px 7px 2px;
+      background:color-mix(in srgb, var(--chrome) 72%, var(--bg))}
+.kids .pane{flex:1; border:1px solid var(--line); border-radius:9px; overflow:hidden; background:var(--bg);
+      box-shadow:0 2px 10px -4px rgba(0,0,0,.5)}
+.kids .pane.focus{border-color:color-mix(in srgb, var(--kc) 70%, var(--line)); box-shadow:0 0 0 1px color-mix(in srgb, var(--kc) 45%, transparent), 0 4px 14px -4px rgba(0,0,0,.6)}
 .splitter{flex:0 0 5px; cursor:col-resize; background:transparent; position:relative}
 .splitter::after{content:""; position:absolute; inset:0 2px; background:var(--line)}
 .splitter:hover::after{background:var(--acc)}
-.pane-head{display:flex; align-items:center; gap:7px; font-size:11px; color:var(--dim); padding:4px 6px 4px 10px;
-           border-bottom:1px solid var(--line); background:color-mix(in srgb, var(--chrome) 55%, transparent); flex:0 0 auto}
-.pane.focus .pane-head{color:var(--acc)}
-.pane.focus::before{content:""; position:absolute; inset:0; border:1px solid var(--acc); pointer-events:none; z-index:3; opacity:.55}
-.pane-head .ph-nm{font-weight:500; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
-.pane-head .ph-cwd{opacity:.6; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-family:"JetBrains Mono",monospace; font-size:10.5px}
-.pane-head .ph-act{margin-left:auto; display:flex; gap:2px; align-items:center}
+.pane-head{display:flex; align-items:center; gap:7px; font-size:11px; color:var(--dim); padding:5px 6px 5px 11px;
+           border-bottom:1px solid var(--line); background:var(--chrome); flex:0 0 auto; position:relative}
+.pane-head::before{content:""; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--kc); opacity:.75}
+.pane.focus .pane-head{color:var(--kc); background:color-mix(in srgb, var(--kc) 13%, var(--chrome))}
+.pane.focus .pane-head::before{opacity:1}
+.kidno{flex:0 0 auto; display:inline-grid; place-items:center; width:15px; height:15px; border-radius:4px; font-size:9.5px; font-weight:600;
+       background:color-mix(in srgb, var(--kc) 22%, transparent); color:var(--kc); border:1px solid color-mix(in srgb, var(--kc) 40%, transparent)}
+.pane.parent.focus::before{content:""; position:absolute; inset:0; border:1px solid var(--acc); pointer-events:none; z-index:3; opacity:.5}
+.pane-head{flex-wrap:nowrap}
+.pane-head .ph-nm{font-weight:500; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:0 1 auto; min-width:5ch}
+.pane-head .ph-cwd{opacity:.55; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-family:"JetBrains Mono",monospace;
+                   font-size:10.5px; flex:1 1 0; min-width:0}
+.pane-head .ph-act{margin-left:auto; display:flex; gap:2px; align-items:center; flex:0 0 auto}
 .pane-head .ph-act b{cursor:pointer; padding:1px 6px; border-radius:5px; font-weight:400; font-size:13px; line-height:1.3}
 .pane-head .ph-act b:hover{background:color-mix(in srgb, var(--acc) 26%, transparent); color:var(--fg)}
 .pane-head .ph-act b.add{color:var(--acc); border:1px solid color-mix(in srgb, var(--acc) 40%, transparent)}
-.badge{font-size:9.5px; letter-spacing:.06em; padding:0 5px; border-radius:4px; border:1px solid var(--line); color:var(--dim)}
+.badge{font-size:9.5px; letter-spacing:.06em; padding:0 5px; border-radius:4px; border:1px solid var(--line); color:var(--dim);
+        white-space:nowrap; flex:0 0 auto; line-height:1.5}
 .badge.run{color:var(--green); border-color:color-mix(in srgb, var(--green) 45%, transparent)}
 .term{flex:1; overflow-y:auto; padding:8px 12px 12px; font-family:"JetBrains Mono", ui-monospace, Consolas, monospace;
       font-size:12.5px; line-height:1.55; white-space:pre-wrap; word-break:break-word; scrollbar-color:var(--line) transparent}
@@ -202,7 +212,7 @@ body{margin:0; background:var(--paper); color:var(--ink);
     <div>
       <h1><b>PoshDeck</b> — 터미널 그룹 목업</h1>
       <p>부모 터미널 하나에 자식 여럿. <b>부모 페인 헤더의 ⊕</b> 를 눌러 하위 폴더를 고르면 자식이 오른쪽에 쌓입니다.
-         자식이 3개를 넘으면 오래된 자식이 탭으로 접히고, <b>실행 중인 자식(●)은 보호</b>됩니다.</p>
+         자식이 3개를 넘으면 오래된 자식이 탭으로 접히고, <b>실행 중인 자식(●)은 보호</b>됩니다. 자식마다 색과 번호가 붙어 탭과 페인이 짝지어지고, <span class="kbd">Alt+1~3</span> 으로 바로 건너뜁니다.</p>
     </div>
     <div class="mono" style="font-size:11px; color:var(--ink-3)">SPEC-groups.md 반영</div>
   </header>
@@ -295,6 +305,7 @@ function subFolders(path){ return childrenOf(path).filter(n => n.d); }
 function leaf(p){ return p.split("\\").pop(); }
 
 // ============================================================ state
+const KC = ["cyan","magenta","yellow","green"];   // 자식 구분색 — 탭과 페인이 같은 색으로 짝지어진다
 const SHELL_LABEL = {pwsh:"PowerShell 7.4.6", powershell:"Windows PowerShell 5.1", cmd:"cmd.exe", wsl:"Ubuntu 24.04"};
 let SEQ = 0, CLOCK = 0;
 const S = { layout:"ide", theme:"tokyonight", maxVisible:3, expHidden:false,
@@ -321,6 +332,7 @@ function addChild(g, cwd, shell){
     lines:[{h:`<span class="o-dim">${SHELL_LABEL[shell||"pwsh"]} — 새 세션</span>`},
            {h:`<span class="o-dim">작업 폴더: ${esc(cwd)}</span>`},{h:""}]});
   g.children.push(t.id); g.visible.push(t.id);
+  t.hue = KC[(g.children.length - 1) % KC.length];
   enforceVisible(g);
   S.activeGroup = g.id; S.focusedTerm = t.id;
   render(); focusTerm();
@@ -426,6 +438,7 @@ function seedParentLog(){
     {h:'<span class="o-dim">Serving HTTP on :: port 8000 …</span>'},{h:""}]});
   g.children = [c1.id, c2.id, c3.id];
   g.visible  = [c1.id, c2.id, c3.id];
+  g.children.forEach((id, i) => { S.terms[id].hue = KC[i % KC.length]; });
   mkGroup({name:"git", cwd:ROOT, lines:[
     {h:'<span class="o-dim">PowerShell 7.4.6 — 새 세션</span>'},{h:""},
     {p:ROOT, cmd:"git log --oneline -3"},
@@ -485,7 +498,8 @@ $("#notes").innerHTML = LAYOUTS.map(l => `<article class="note" data-k="${l.k}">
       <li>자식이 어디로 cd 하든 <b>족보 유지</b></li>
       <li>한도 넘으면 오래된 자식을 접고 <b>실행 중(●)은 보호</b></li>
       <li>부모를 닫으면 그룹 전체가 닫힙니다</li>
-      <li>탭 우클릭 → 독립 그룹으로 <b>승격</b></li></ul></article>`;
+      <li>탭 우클릭 → 독립 그룹으로 <b>승격</b></li>
+      <li>자식마다 <b>색·번호</b>가 고정 — 탭과 페인이 같은 색</li></ul></article>`;
 $("#notes").addEventListener("click", e => { const n = e.target.closest(".note[data-k]"); if (n) applyLayout(n.dataset.k); });
 
 // ============================================================ explorer
@@ -636,7 +650,7 @@ function renderTabs(){
       const folded = isChild && !g.visible.includes(id);
       const on = S.focusedTerm === id;
       html.push(`<div class="tab ${on?"on":""} ${g.id===S.activeGroup?"ingroup":""} ${isChild?"child":""} ${folded?"folded":""}"
-        data-id="${id}" title="${esc(t.cwd)}${folded?" — 접힘":""}">
+        data-id="${id}" style="--kc:${isChild?`var(--${t.hue||"cyan"})`:"var(--acc)"}" title="${esc(t.cwd)}${folded?" — 접힘":""}">
         <span class="t-ic ${t.running?"run":""}">${isChild?"&#9492;":"&#9632;"}</span>
         <span class="t-nm">${esc(t.name)}</span>${folded?'<span class="t-ic">&#8964;</span>':""}
         <span class="x" data-x="${id}">&times;</span></div>`);
@@ -675,16 +689,25 @@ function lineHTML(l){
   if (l.p !== undefined) return `<span class="ps">PS</span> <span class="path">${esc(l.p)}</span><span class="arrow">&gt;</span> <span class="cmd">${esc(l.cmd)}</span>`;
   return l.h;
 }
+function shortPath(p){
+  const parts = p.split("\\");
+  return parts.length <= 3 ? p : "…\\" + parts.slice(-2).join("\\");
+}
 function paneHTML(t, isParent){
   const live = S.focusedTerm === t.id;
   const prompt = `<span class="ps">PS</span> <span class="path">${esc(t.cwd)}</span><span class="arrow">&gt;</span> <span class="cmd">${esc(t.buf)}</span>${live?'<span class="caret"></span>':""}`;
   const moved = t.cwd !== t.birthCwd && !isParent;
-  return `<div class="pane ${isParent?"parent":"kid"} ${live?"focus":""}" data-id="${t.id}" ${isParent?`style="flex:0 0 ${Math.round(S.groups.find(g=>g.id===S.activeGroup).ratio*100)}%"`:""}>
+  const g = S.groups.find(g => g.id === S.activeGroup);
+  const kc = isParent ? "var(--acc)" : `var(--${t.hue||"cyan"})`;
+  const no = isParent ? "" : `<span class="kidno">${g.children.indexOf(t.id)+1}</span>`;
+  const style = `--kc:${kc}` + (isParent ? `; flex:0 0 ${Math.round(g.ratio*100)}%` : "");
+  return `<div class="pane ${isParent?"parent":"kid"} ${live?"focus":""}" data-id="${t.id}" style="${style}">
     <div class="pane-head">
-      <span class="ph-nm">${isParent?"":"&#9492; "}${esc(t.name)}</span>
-      <span class="ph-cwd">${esc(t.cwd)}</span>
-      ${t.running?'<span class="badge run">● 실행 중</span>':""}
-      ${moved?`<span class="badge" title="태어난 곳: ${esc(t.birthCwd)}">&#10548; 이동함</span>`:""}
+      ${no}
+      <span class="ph-nm">${esc(t.name)}</span>
+      <span class="ph-cwd" title="${esc(t.cwd)}">${esc(isParent ? t.cwd : shortPath(t.cwd))}</span>
+      ${t.running?'<span class="badge run" title="실행 중인 프로세스가 있어 접기에서 보호됩니다">● 실행</span>':""}
+      ${moved?`<span class="badge" title="태어난 곳: ${esc(t.birthCwd)}">&#10548; 이동</span>`:""}
       <span class="ph-act">
         ${isParent?'<b class="add" data-add="'+t.id+'" title="자식 터미널 추가 (Ctrl+Shift+D)">&#43;</b>':""}
         <b data-close="${t.id}" title="${isParent?"그룹 닫기":"닫기"}">&times;</b>
@@ -785,6 +808,7 @@ function runCmd(t, raw){
       {h:'  <span class="o-cyan">python crawl_complex.py</span> 크롤러 실행 → 실행 중(●) 상태가 되어 접기에서 보호됨'},
       {h:'  <span class="o-cyan">stop</span>                     실행 중 상태 해제'},
       {h:'  <span class="o-cyan">cls</span> / <span class="o-cyan">pwd</span> / <span class="o-cyan">git log</span>'},{h:""},
+      {h:'<span class="o-dim">Alt+1~3 — 자식 번호로 이동 · Alt+0 — 부모로</span>'},
       {h:'<span class="o-dim">Ctrl+Shift+D — 부모에서 자식 만들기 (자식 페인에서 눌러도 부모 기준)</span>'},{h:""});
   }
   else if (v === "python" || v === "py"){
@@ -823,6 +847,15 @@ function toast(msg){
 function render(){ renderTabs(); renderTree(); renderPanes(); }
 document.addEventListener("keydown", e => {
   if (e.key === "F2" && document.activeElement === ghost){ e.preventDefault(); renameTab(S.focusedTerm); }
+  if (e.altKey && /^[1-9]$/.test(e.key)){          // Alt+숫자 — 자식 번호로 바로 이동
+    const g = S.groups.find(g => g.id === S.activeGroup);
+    const id = g.children[Number(e.key) - 1];
+    if (id){ e.preventDefault(); unfold(id); render(); focusTerm(); }
+  }
+  if (e.altKey && e.key === "0"){                  // Alt+0 — 부모로
+    const g = S.groups.find(g => g.id === S.activeGroup);
+    e.preventDefault(); S.focusedTerm = g.parentId; render(); focusTerm();
+  }
 });
 applyTheme("tokyonight");
 applyLayout("ide");
