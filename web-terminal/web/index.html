@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PoshDeck</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%2316161e'/%3E%3Cpath d='M3.5 5l2.5 3-2.5 3M8 11h5' stroke='%237AA2F7' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/vendor/xterm/css/xterm.css">
+<link rel="stylesheet" href="/styles.css">
+<script src="/vendor/xterm/lib/xterm.js"></script>
+<script src="/vendor/addon-fit/addon-fit.js"></script>
+<script src="/vendor/addon-search/addon-search.js"></script>
+<script src="/vendor/addon-unicode11/addon-unicode11.js"></script>
+<script src="/vendor/addon-webgl/addon-webgl.js"></script>
+</head>
+<body>
+<div class="app" id="app" data-layout="ide">
+  <div class="body">
+    <nav class="rail">
+      <b class="on" id="railExp" title="탐색기 (Ctrl+B)">&#9776;</b>
+      <b id="railTheme" title="테마" style="margin-top:auto; margin-bottom:8px">&#9681;</b>
+    </nav>
+
+    <aside class="exp" id="exp">
+      <div class="exp-head">
+        <span id="expRoot">탐색기</span>
+        <span class="act">
+          <b id="expUp" title="상위 폴더">&#8593;</b>
+          <b id="expNewDir" title="새 폴더">&#43;</b>
+          <b id="expRefresh" title="새로 고침">&#8635;</b>
+        </span>
+      </div>
+      <div class="tree" id="tree"></div>
+      <div class="drives" id="drives"></div>
+    </aside>
+
+    <section class="main">
+      <div class="tabbar">
+        <div class="tabs" id="tabs"></div>
+        <div class="tabadd" id="tabadd" title="새 그룹 (Ctrl+Shift+T)">&#43;</div>
+        <div class="right">
+          <span class="fs" title="글자 크기 — Ctrl +/− · 페인 위에서 Ctrl+휠은 그 창만">
+            <b id="fsDown">A&#8722;</b><b class="val" id="fsVal">13px</b><b id="fsUp">A&#43;</b>
+          </span>
+          <b id="btnSearch" title="검색 Ctrl+F">&#8981;</b>
+          <b id="btnTheme" title="테마">&#9681;</b>
+        </div>
+      </div>
+      <div class="panes" id="panes"></div>
+    </section>
+  </div>
+
+  <div class="statusbar">
+    <span id="stPath">—</span>
+    <span id="stShell">—</span>
+    <span class="sp" id="stGroup">—</span>
+    <span id="stConn" class="conn">연결 중…</span>
+  </div>
+</div>
+
+<script type="module" src="/app.js"></script>
+</body>
+</html>

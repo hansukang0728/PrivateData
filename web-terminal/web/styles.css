@@ -1,0 +1,156 @@
+/* PoshDeck — 색은 전부 테마 토큰에서 온다(themes.js 가 --bg 등을 .app 에 꽂는다) */
+*{box-sizing:border-box}
+html,body{height:100%; margin:0; overflow:hidden}
+body{background:#14151c; color:#c8ccd8;
+  font-family:"IBM Plex Sans KR", "Malgun Gothic", system-ui, -apple-system, sans-serif; font-size:13px}
+:focus-visible{outline:2px solid var(--acc); outline-offset:1px}
+
+.app{
+  --bg:#1A1B26; --fg:#A9B1D6; --dim:#565f89; --chrome:#16161e; --panel:#1a1b26; --line:#2a2e42;
+  --acc:#7AA2F7; --red:#F7768E; --green:#9ECE6A; --yellow:#E0AF68; --blue:#7AA2F7; --magenta:#BB9AF7; --cyan:#7DCFFF;
+  height:100%; display:flex; flex-direction:column; background:var(--bg); color:var(--fg);
+}
+.body{flex:1; display:flex; min-height:0; position:relative}
+
+/* 좌측 레일 + 탐색기 */
+.rail{width:42px; flex:0 0 42px; background:var(--chrome); border-right:1px solid var(--line);
+      display:none; flex-direction:column; align-items:center; padding-top:8px; gap:4px; color:var(--dim)}
+.rail b{width:30px; height:30px; display:grid; place-items:center; border-radius:7px; cursor:pointer; font-size:15px}
+.rail b:hover{background:color-mix(in srgb, var(--acc) 15%, transparent); color:var(--fg)}
+.rail b.on{color:var(--acc); background:color-mix(in srgb, var(--acc) 15%, transparent)}
+.app[data-layout="term"] .rail{display:flex}
+.app[data-layout="term"] .exp{position:absolute; left:42px; top:0; bottom:0; z-index:6; box-shadow:12px 0 30px -12px rgba(0,0,0,.6)}
+.exp.hide{display:none}
+
+.exp{width:250px; flex:0 0 250px; background:var(--panel); border-right:1px solid var(--line);
+     display:flex; flex-direction:column; min-height:0}
+.exp-head{display:flex; align-items:center; gap:6px; padding:7px 8px 7px 10px; border-bottom:1px solid var(--line);
+          font-size:11px; color:var(--dim); white-space:nowrap; overflow:hidden}
+.exp-head #expRoot{overflow:hidden; text-overflow:ellipsis; font-family:ui-monospace,Consolas,monospace}
+.exp-head .act{margin-left:auto; display:flex; gap:2px; flex:0 0 auto}
+.exp-head .act b{cursor:pointer; padding:2px 6px; border-radius:4px; font-weight:400}
+.exp-head .act b:hover{background:color-mix(in srgb, var(--acc) 18%, transparent); color:var(--fg)}
+.tree{overflow:auto; flex:1; padding:5px 0 12px}
+.row{display:flex; align-items:center; gap:6px; padding:3px 10px 3px 6px; cursor:default; white-space:nowrap}
+.row:hover{background:color-mix(in srgb, var(--acc) 12%, transparent)}
+.row.sel{background:color-mix(in srgb, var(--acc) 26%, transparent); color:#fff}
+.row .tw{width:12px; flex:0 0 12px; text-align:center; color:var(--dim); font-size:9px}
+.row .ic{width:14px; flex:0 0 14px; text-align:center}
+.row .nm{overflow:hidden; text-overflow:ellipsis}
+.row input{font:inherit; background:var(--bg); color:var(--fg); border:1px solid var(--acc); border-radius:3px; padding:0 3px; width:150px}
+.row.dir .nm{color:var(--yellow)}
+.row.file .nm{color:var(--fg); opacity:.85}
+.row.hidden{opacity:.5}
+.drives{flex:0 0 auto; border-top:1px solid var(--line); padding:5px 6px; display:flex; gap:4px; flex-wrap:wrap}
+.drives b{font-weight:400; font-size:11px; padding:2px 7px; border-radius:5px; cursor:pointer; color:var(--dim); border:1px solid var(--line)}
+.drives b:hover{color:var(--fg); border-color:var(--acc)}
+
+/* 탭 바 */
+.main{flex:1; display:flex; flex-direction:column; min-width:0; min-height:0}
+.tabbar{display:flex; align-items:stretch; background:var(--chrome); border-bottom:1px solid var(--line); min-height:33px; flex:0 0 auto}
+.tabs{display:flex; overflow-x:auto; scrollbar-width:none} .tabs::-webkit-scrollbar{display:none}
+.tab{display:flex; align-items:center; gap:6px; padding:0 8px 0 11px; border-right:1px solid var(--line);
+     color:var(--dim); cursor:pointer; white-space:nowrap; max-width:230px; font-size:12.5px; position:relative}
+.tab:hover{background:color-mix(in srgb, var(--acc) 10%, transparent)}
+.tab.on{background:var(--bg); color:var(--fg)}
+.tab.on::after{content:""; position:absolute; left:0; right:0; top:0; height:2px; background:var(--acc)}
+.tab .t-ic{font-size:10px; color:var(--acc)}
+.tab .t-ic.run{color:var(--green); animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.25}}
+.tab .t-nm{overflow:hidden; text-overflow:ellipsis}
+.tab input{font:inherit; width:110px; background:var(--bg); color:var(--fg); border:1px solid var(--acc); border-radius:3px; padding:0 4px}
+.tab .x{opacity:0; padding:0 3px; border-radius:4px; font-size:13px; line-height:1}
+.tab:hover .x,.tab.on .x{opacity:.6}
+.tab .x:hover{opacity:1; background:color-mix(in srgb, var(--red) 35%, transparent); color:#fff}
+.kidcount{font-size:9.5px; min-width:14px; height:14px; padding:0 4px; border-radius:7px; display:inline-grid; place-items:center;
+          background:color-mix(in srgb, var(--acc) 22%, transparent); color:var(--acc); font-weight:600}
+.tabadd{padding:0 12px; color:var(--dim); cursor:pointer; display:flex; align-items:center; font-size:15px}
+.tabadd:hover{color:var(--fg)}
+.tabbar .right{margin-left:auto; display:flex; align-items:center; gap:2px; padding-right:8px; color:var(--dim); font-size:11px}
+.tabbar .right>b{font-weight:400; padding:3px 8px; border-radius:5px; cursor:pointer}
+.tabbar .right>b:hover{background:color-mix(in srgb, var(--acc) 15%, transparent); color:var(--fg)}
+.tabbar .right .fs{display:flex; align-items:center; border:1px solid var(--line); border-radius:6px; margin-right:6px; overflow:hidden}
+.tabbar .right .fs b{padding:3px 8px; cursor:pointer; font-weight:400}
+.tabbar .right .fs b:hover{background:color-mix(in srgb, var(--acc) 18%, transparent); color:var(--fg)}
+.tabbar .right .fs .val{font-family:ui-monospace,Consolas,monospace; font-size:10.5px; min-width:42px; text-align:center;
+     border-inline:1px solid var(--line)}
+
+/* 페인 */
+.panes{flex:1; display:flex; min-height:0; min-width:0}
+.pane{display:flex; flex-direction:column; min-width:0; min-height:0; position:relative}
+.pane.parent{flex:0 0 60%; border-right:1px solid var(--line)}
+.kids{flex:1; display:flex; flex-direction:column; min-width:0; min-height:0; gap:7px; padding:7px 7px 7px 2px;
+      background:color-mix(in srgb, var(--chrome) 72%, var(--bg))}
+.kids .pane{flex:1; border:1px solid var(--line); border-radius:9px; overflow:hidden; background:var(--bg);
+      box-shadow:0 2px 10px -4px rgba(0,0,0,.5)}
+.kids .pane.focus{border-color:color-mix(in srgb, var(--kc) 70%, var(--line));
+      box-shadow:0 0 0 1px color-mix(in srgb, var(--kc) 45%, transparent), 0 4px 14px -4px rgba(0,0,0,.6)}
+.pane.parent.focus::before{content:""; position:absolute; inset:0; border:1px solid var(--acc); pointer-events:none; z-index:3; opacity:.5}
+.splitter{flex:0 0 5px; cursor:col-resize; position:relative}
+.splitter::after{content:""; position:absolute; inset:0 2px; background:var(--line)}
+.splitter:hover::after{background:var(--acc)}
+
+.pane-head{display:flex; align-items:center; gap:7px; font-size:11px; color:var(--dim); padding:5px 6px 5px 11px;
+           border-bottom:1px solid var(--line); background:var(--chrome); flex:0 0 auto; position:relative; flex-wrap:nowrap}
+.pane-head::before{content:""; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--kc); opacity:.75}
+.pane.focus .pane-head{color:var(--kc); background:color-mix(in srgb, var(--kc) 13%, var(--chrome))}
+.pane.focus .pane-head::before{opacity:1}
+.ph-nm{font-weight:500; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:0 1 auto; min-width:5ch; cursor:text}
+.ph-cwd{opacity:.55; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-family:ui-monospace,Consolas,monospace;
+        font-size:10.5px; flex:1 1 0; min-width:0}
+.ph-act{margin-left:auto; display:flex; gap:2px; align-items:center; flex:0 0 auto}
+.ph-act b{cursor:pointer; padding:1px 6px; border-radius:5px; font-weight:400; font-size:13px; line-height:1.3}
+.ph-act b:hover{background:color-mix(in srgb, var(--acc) 26%, transparent); color:var(--fg)}
+.ph-act b.add{color:var(--acc); border:1px solid color-mix(in srgb, var(--acc) 40%, transparent)}
+.ph-nm input{font:inherit; width:12ch; background:var(--bg); color:var(--fg); border:1px solid var(--kc); border-radius:3px; padding:0 3px}
+.kidno{flex:0 0 auto; display:inline-grid; place-items:center; width:15px; height:15px; border-radius:4px; font-size:9.5px;
+       font-weight:600; background:color-mix(in srgb, var(--kc) 22%, transparent); color:var(--kc);
+       border:1px solid color-mix(in srgb, var(--kc) 40%, transparent)}
+.badge{font-size:9.5px; letter-spacing:.06em; padding:0 5px; border-radius:4px; border:1px solid var(--line); color:var(--dim);
+       white-space:nowrap; flex:0 0 auto; line-height:1.5}
+.badge.run{color:var(--green); border-color:color-mix(in srgb, var(--green) 45%, transparent)}
+.badge.dead{color:var(--red); border-color:color-mix(in srgb, var(--red) 45%, transparent)}
+.host{flex:1; min-height:0; padding:4px 2px 2px 8px}
+.host .xterm{height:100%}
+
+.fbar{flex:0 0 auto; display:flex; align-items:center; gap:8px; height:25px; padding:0 7px 0 11px; cursor:pointer;
+      border:1px solid var(--line); border-radius:7px; background:var(--chrome); color:var(--dim); font-size:11px; position:relative}
+.fbar::before{content:""; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--kc); opacity:.55; border-radius:7px 0 0 7px}
+.fbar:hover{color:var(--fg); border-color:color-mix(in srgb, var(--kc) 60%, var(--line))}
+.fbar .fnm{font-weight:500; white-space:nowrap}
+.fbar .fcwd{font-family:ui-monospace,Consolas,monospace; font-size:10px; opacity:.55; white-space:nowrap; overflow:hidden;
+      text-overflow:ellipsis; flex:1 1 0; min-width:0}
+.fbar .fx{margin-left:auto; flex:0 0 auto; opacity:.7; white-space:nowrap}
+
+/* 검색 */
+.find{position:absolute; top:34px; right:12px; z-index:8; display:flex; gap:4px; align-items:center;
+      background:var(--chrome); border:1px solid var(--line); border-radius:8px; padding:5px 7px;
+      box-shadow:0 14px 30px -12px rgba(0,0,0,.7)}
+.find input{font:inherit; font-size:12px; width:180px; background:var(--bg); color:var(--fg);
+      border:1px solid var(--line); border-radius:5px; padding:3px 7px}
+.find b{cursor:pointer; padding:2px 7px; border-radius:5px; color:var(--dim); font-weight:400}
+.find b:hover{background:color-mix(in srgb, var(--acc) 22%, transparent); color:var(--fg)}
+
+/* 상태바 · 메뉴 · 토스트 */
+.statusbar{flex:0 0 auto; display:flex; gap:16px; align-items:center; background:var(--chrome); border-top:1px solid var(--line);
+           padding:3px 12px; font-size:11px; color:var(--dim)}
+.statusbar .sp{margin-left:auto}
+.statusbar .conn.bad{color:var(--red)}
+.statusbar .conn.ok{color:var(--green)}
+.menu{position:fixed; z-index:50; min-width:238px; background:var(--chrome); border:1px solid var(--line); border-radius:8px;
+      padding:5px; box-shadow:0 18px 46px -12px rgba(0,0,0,.66); font-size:13px; color:var(--fg)}
+.menu .mi{display:flex; align-items:center; gap:10px; padding:6px 9px; border-radius:5px; cursor:default; position:relative}
+.menu .mi:hover{background:color-mix(in srgb, var(--acc) 30%, transparent)}
+.menu .mi.dis{color:var(--dim); pointer-events:none}
+.menu .mi .k{margin-left:auto; color:var(--dim); font-size:11px; font-family:ui-monospace,Consolas,monospace}
+.menu .mi .ic{width:16px; text-align:center; opacity:.85}
+.menu .sep{height:1px; background:var(--line); margin:5px 4px}
+.menu .cap{padding:4px 9px 6px; font-size:10.5px; letter-spacing:.06em; color:var(--dim)}
+.menu .sub{position:absolute; left:100%; top:-6px; margin-left:2px; display:none}
+.menu .mi:hover>.sub{display:block}
+.menu .mi.hot{color:var(--acc); font-weight:500}
+.menu .mi.sw{gap:8px}
+.menu .mi .dot{width:11px; height:11px; border-radius:3px; flex:0 0 auto; border:1px solid rgba(255,255,255,.25)}
+.toast{position:fixed; left:16px; bottom:30px; z-index:99; font-size:12px; color:var(--fg); background:var(--chrome);
+       border:1px solid var(--line); padding:7px 12px; border-radius:8px; box-shadow:0 12px 30px -10px rgba(0,0,0,.6);
+       max-width:min(460px,80vw)}
