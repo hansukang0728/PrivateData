@@ -20,6 +20,7 @@ export const api = {
   open:      path             => post("/api/shell/open", { path }),
   reveal:    path             => post("/api/shell/reveal", { path }),
   properties:path             => post("/api/shell/properties", { path }),
+  shellMenu: (path, x, y, extended) => post("/api/shell/menu", { path, x, y, extended }),
   loadWs:    ()               => call("/api/workspace"),
   saveWs:    state            => post("/api/workspace", state)
 };

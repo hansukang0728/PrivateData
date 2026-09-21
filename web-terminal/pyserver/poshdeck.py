@@ -218,6 +218,20 @@ class Handler(BaseHTTPRequestHandler):
                 fsops.reveal(guard(body["path"])); self._ok()
             elif path == "/api/shell/properties":
                 fsops.properties(guard(body["path"])); self._ok()
+            elif path == "/api/shell/menu":
+                # 탐색기가 보여주는 진짜 셸 메뉴 (TortoiseGit 같은 확장 포함)
+                if sys.platform != "win32":
+                    self._fail("Windows 에서만 됩니다")
+                else:
+                    try:
+                        import shellmenu
+                    except Exception as e:
+                        self._fail(f"셸 메뉴 모듈을 불러오지 못했습니다: {e}")
+                        return
+                    err = shellmenu.show_async(guard(body["path"]),
+                                               body.get("x", 0), body.get("y", 0),
+                                               bool(body.get("extended")))
+                    self._json({"ok": not err, "error": err} if err else {"ok": True})
             elif path == "/api/workspace":
                 self._ok(saved=save_workspace(body))
             else:

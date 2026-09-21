@@ -68,7 +68,7 @@ export function createExplorer(treeEl, hooks) {
     const row = ev.target.closest(".row"); if (!row) return;
     ev.preventDefault();
     sel = row.dataset.p; await render();
-    hooks.onContext?.(row.dataset.p, leaf(row.dataset.p), row.dataset.dir === "1", ev.clientX, ev.clientY);
+    hooks.onContext?.(row.dataset.p, leaf(row.dataset.p), row.dataset.dir === "1", ev.clientX, ev.clientY, ev);
   });
 
   // 이름 바꾸기는 그 자리에서

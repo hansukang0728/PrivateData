@@ -13,8 +13,13 @@ const KC = ["cyan", "magenta", "yellow", "green"];      // 자식 구분색
 const FS_MIN = 9, FS_MAX = 22, FS_DEF = 13;
 const SHELLS = [["PowerShell 7", "pwsh"], ["Windows PowerShell 5.1", "powershell"], ["명령 프롬프트", "cmd"], ["Ubuntu (WSL)", "wsl"]];
 
+const DEFAULT_CMDS = () => (S.platform === "win32"
+  ? [{ n: "목록", c: "Get-ChildItem" }, { n: "git 상태", c: "git status" }, { n: "현재 경로", c: "Get-Location" }]
+  : [{ n: "목록", c: "ls -la" }, { n: "git 상태", c: "git status" }, { n: "현재 경로", c: "pwd" }]);
+
 const S = {
   layout: "ide", theme: "tokyonight", maxVisible: 3, fontSize: FS_DEF, expHidden: false,
+  expWidth: 250, cmds: null, bcast: false,
   groups: [], terms: {}, activeGroup: null, focusedTerm: null,
   home: "", platform: "win32", defaultShell: "pwsh"
 };
@@ -407,10 +412,14 @@ function paneMenu(id, x, y) {
 // ─────────────────────────────────────────────── 탐색기
 const explorer = createExplorer($("#tree"), {
   onSelect: p => { $("#expRoot").textContent = explorer.root; },
-  onContext: (path, name, isDir, x, y) => {
+  onContext: (path, name, isDir, x, y, ev) => {
     const g = activeGroup(), parent = S.terms[g.parentId];
     const dir = isDir ? path : explorer.parentOf(path);
+    if (ev && ev.shiftKey) return nativeMenu(path, ev, true);   // Shift+우클릭 = 확장 메뉴 바로
     showMenu(x, y, [
+      { i: "&#9881;", t: "Windows 메뉴 열기", k: "Shift+우클릭", hot: true,
+        act: () => nativeMenu(path, ev, false) },
+      { sep: 1 },
       { i: "&#128194;", t: "열기", k: "Enter", act: () => api.open(path).catch(e => toast(e.message)) },
       { sep: 1 },
       { i: "&#8627;", t: `자식 터미널로 열기 — ${parent.name} 밑`, hot: true, act: () => addChild(g, dir) },
@@ -441,6 +450,18 @@ const explorer = createExplorer($("#tree"), {
   }
 });
 let clip = null;
+
+// 탐색기가 쓰는 그 메뉴를 그대로 띄운다. 셸 확장(TortoiseGit, 7-Zip 등)이 채운 항목까지 나온다.
+async function nativeMenu(path, ev, extended) {
+  if (!ev) return toast("메뉴 위치를 알 수 없습니다");
+  const dpr = window.devicePixelRatio || 1;
+  try {
+    const r = await api.shellMenu(path, Math.round(ev.screenX * dpr), Math.round(ev.screenY * dpr), !!extended);
+    if (r && r.error) toast("Windows 메뉴: " + r.error);
+  } catch (e) {
+    toast("Windows 메뉴를 띄우지 못했습니다 — " + e.message);
+  }
+}
 
 $("#expUp").addEventListener("click", () => {
   const up = explorer.parentOf(explorer.root);
@@ -482,6 +503,26 @@ $("#expRoot").addEventListener("click", () => {
 });
 $("#expRefresh").addEventListener("click", renderDrives);
 
+// 탐색기 폭 — 분할선을 끌어서 조절, 작업셋에 저장된다
+$("#expSplit").addEventListener("mousedown", e => {
+  e.preventDefault();
+  const handle = e.currentTarget;
+  handle.classList.add("on");
+  const startX = e.clientX, startW = $("#exp").getBoundingClientRect().width;
+  const move = ev => {
+    S.expWidth = Math.min(560, Math.max(150, startW + ev.clientX - startX));
+    $("#exp").style.flex = `0 0 ${S.expWidth}px`;
+    refitAll();
+  };
+  const up = () => {
+    handle.classList.remove("on");
+    removeEventListener("mousemove", move); removeEventListener("mouseup", up);
+    save();
+  };
+  addEventListener("mousemove", move); addEventListener("mouseup", up);
+});
+$("#expSplit").addEventListener("dblclick", () => { S.expWidth = 250; $("#exp").style.flex = "0 0 250px"; refitAll(); save(); });
+
 $("#railExp").addEventListener("click", toggleExplorer);
 function toggleExplorer() {
   S.expHidden = !S.expHidden;
@@ -513,6 +554,72 @@ function setFont(delta, absolute) {
 $("#fsUp").addEventListener("click", () => setFont(+1));
 $("#fsDown").addEventListener("click", () => setFont(-1));
 $("#fsVal").addEventListener("click", () => { setFont(0, FS_DEF); toast(`글자 크기 ${FS_DEF}px — 기본값`); });
+
+// ─────────────────────────────────────────────── 자주 쓰는 명령
+function renderCmds() {
+  const el = $("#cmds");
+  if (!S.cmds || !S.cmds.length) {
+    el.innerHTML = `<span class="empty">＋ 를 눌러 자주 쓰는 명령을 등록해 두세요</span>`;
+    return;
+  }
+  el.innerHTML = S.cmds.map((c, i) =>
+    `<b class="cmd" data-i="${i}" title="${esc(c.c)}\n\n클릭: 실행 · Shift+클릭: 입력만 · 우클릭: 편집">${esc(c.n)}</b>`).join("");
+}
+
+// {cwd} 는 그 터미널의 현재 폴더로 바뀐다
+function expand(cmd, t) { return cmd.replace(/\{cwd\}/g, t.cwd); }
+
+function sendCmd(cmd, { run = true, all = false } = {}) {
+  const g = activeGroup();
+  const targets = all ? groupTerms(g).filter(id => S.terms[id]) : [S.focusedTerm];
+  let sent = 0;
+  for (const id of targets) {
+    const t = S.terms[id];
+    if (!t || t.dead) continue;
+    conn.send({ t: "in", id, d: expand(cmd, t) + (run ? "\r" : "") });
+    t.lastUse = ++mkTerm.clock;
+    sent++;
+  }
+  if (!sent) return toast("보낼 터미널이 없습니다");
+  if (all) toast(`${sent}개 창에 보냈습니다: ${cmd}`);
+  if (!all) panes.get(S.focusedTerm)?.term.focus();
+}
+
+$("#cmds").addEventListener("click", e => {
+  const b = e.target.closest(".cmd"); if (!b) return;
+  const c = S.cmds[Number(b.dataset.i)]; if (!c) return;
+  sendCmd(c.c, { run: !e.shiftKey, all: $("#bcast").checked });
+});
+$("#cmds").addEventListener("contextmenu", e => {
+  const b = e.target.closest(".cmd"); if (!b) return;
+  e.preventDefault();
+  const i = Number(b.dataset.i), c = S.cmds[i];
+  showMenu(e.clientX, e.clientY, [
+    { cap: c.c },
+    { i: "&#9654;", t: "이 창에서 실행", hot: true, act: () => sendCmd(c.c, { run: true }) },
+    { i: "&#9776;", t: "그룹의 모든 창에서 실행", act: () => sendCmd(c.c, { run: true, all: true }) },
+    { i: "&#9998;", t: "입력만 하고 멈추기", act: () => sendCmd(c.c, { run: false }) },
+    { sep: 1 },
+    { i: "&#9998;", t: "편집", act: () => editCmd(i) },
+    { i: "&#10697;", t: "복제", act: () => { S.cmds.splice(i + 1, 0, { ...c }); renderCmds(); save(); } },
+    { i: "&#8592;", t: "왼쪽으로", dis: i === 0, act: () => { S.cmds.splice(i - 1, 0, S.cmds.splice(i, 1)[0]); renderCmds(); save(); } },
+    { i: "&#8594;", t: "오른쪽으로", dis: i === S.cmds.length - 1, act: () => { S.cmds.splice(i + 1, 0, S.cmds.splice(i, 1)[0]); renderCmds(); save(); } },
+    { sep: 1 },
+    { i: "&#128465;", t: "삭제", act: () => { S.cmds.splice(i, 1); renderCmds(); save(); } }
+  ]);
+});
+function editCmd(i) {
+  const c = i === null ? { n: "", c: "" } : S.cmds[i];
+  const cmd = prompt("실행할 명령\n\n{cwd} 를 쓰면 그 터미널의 현재 폴더로 바뀝니다.", c.c);
+  if (cmd === null || !cmd.trim()) return;
+  const name = prompt("버튼에 보일 이름", c.n || cmd.trim().split(/\s+/).slice(0, 2).join(" "));
+  if (name === null) return;
+  const item = { n: (name.trim() || cmd.trim()).slice(0, 20), c: cmd.trim() };
+  if (i === null) S.cmds.push(item); else S.cmds[i] = item;
+  renderCmds(); save();
+}
+$("#cmdAdd").addEventListener("click", () => editCmd(null));
+$("#bcast").addEventListener("change", () => { S.bcast = $("#bcast").checked; save(); });
 
 // ─────────────────────────────────────────────── 검색
 let findEl = null;
@@ -593,7 +700,8 @@ function save() {
                     birthCwd: t.birthCwd, shell: t.shell, hue: t.hue, fs: t.fs };
     api.saveWs({
       v: 1, theme: S.theme, layout: app.dataset.layout, maxVisible: S.maxVisible, fontSize: S.fontSize,
-      expHidden: S.expHidden, explorerRoot: explorer.root, activeGroup: S.activeGroup,
+      expHidden: S.expHidden, expWidth: S.expWidth, cmds: S.cmds, bcast: S.bcast,
+      explorerRoot: explorer.root, activeGroup: S.activeGroup,
       groups: S.groups.map(g => ({ ...g })), terms
     }).catch(() => {});
   }, 500);
@@ -605,6 +713,9 @@ function restore(w) {
   S.maxVisible = w.maxVisible || S.maxVisible;
   S.fontSize = w.fontSize || S.fontSize;
   S.expHidden = !!w.expHidden;
+  S.expWidth = w.expWidth || S.expWidth;
+  if (Array.isArray(w.cmds)) S.cmds = w.cmds;
+  S.bcast = !!w.bcast;
   for (const t of Object.values(w.terms)) {
     mkTerm({ id: t.id, groupId: t.groupId, role: t.role, name: t.name, cwd: t.cwd,
              birthCwd: t.birthCwd, shell: t.shell, hue: t.hue, fs: t.fs });
@@ -636,8 +747,12 @@ function restore(w) {
   try { w = (await api.loadWs()).workspace; } catch {}
   if (!restore(w)) newGroup(S.home, S.defaultShell);
 
+  if (!S.cmds) S.cmds = DEFAULT_CMDS();
   applyTheme(app, S.theme);
   $("#fsVal").textContent = S.fontSize + "px";
+  $("#exp").style.flex = `0 0 ${S.expWidth}px`;
+  $("#bcast").checked = S.bcast;
+  renderCmds();
   app.dataset.layout = S.expHidden ? "term" : "ide";
   $("#exp").classList.toggle("hide", S.expHidden);
 

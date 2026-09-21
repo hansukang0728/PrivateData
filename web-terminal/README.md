@@ -57,7 +57,9 @@ npm start
 | 네트워크 폴더 보기 | 드라이브 줄의 **경로…** → `\\\\서버\\공유폴더` |
 | 탐색기 접기 | `Ctrl+B` |
 | 테마 | 탭 바 오른쪽 **◑ 테마** (8가지) |
-| 창 크기 조절 | 부모↔자식 세로선을 좌우로 · 자식 사이 가로선을 위아래로 끌기 |
+| 창 크기 조절 | 탐색기↔터미널, 부모↔자식 세로선을 좌우로 · 자식 사이 가로선을 위아래로 끌기 (더블클릭 시 초기화) |
+| **Windows 셸 메뉴** | 탐색기에서 **Shift+우클릭**, 또는 우클릭 메뉴 맨 위 "Windows 메뉴 열기" — TortoiseGit·7-Zip 등 셸 확장 포함 |
+| **자주 쓰는 명령** | 화면 아래 명령 바. 클릭=실행, Shift+클릭=입력만, 우클릭=편집, `모든 창`=그룹 전체에 전송, `{cwd}`=그 터미널의 현재 폴더 |
 | 접기·승격·닫기 | 페인 헤더 **우클릭** |
 
 자식이 화면 한도(기본 3개)를 넘으면 가장 오래 안 쓴 자식이 아래 막대로 접힙니다.
@@ -83,6 +85,7 @@ pyserver/            ← 기본. 표준 라이브러리만, 설치 불필요
   ptyposix.py   리눅스·맥용 PTY (개발/검증용)
   wsproto.py    RFC 6455 WebSocket 프레이밍
   fsops.py      파일 작업 + 윈도우 셸 동작
+  shellmenu.py  탐색기의 진짜 컨텍스트 메뉴 (IContextMenu 를 ctypes 로 호출)
 
 server/              ← 선택. Node 가 있는 환경용
   index.js      Express + ws / pty.js  node-pty
@@ -115,6 +118,7 @@ web/
 | `Python 도 Node 도 찾을 수 없습니다` | `py -3 --version` 을 쳐보세요. 없으면 Microsoft Store 의 Python 은 설치 권한 없이 받을 수 있습니다 |
 | `ConPTY(CreatePseudoConsole)가 없습니다` | Windows 10 1809(2018년) 이상이 필요합니다. 그 아래 버전은 Node 백엔드 + node-pty 로만 가능합니다 |
 | `npm install` 에서 node-pty 빌드 실패 | Node 백엔드를 쓸 때만 해당됩니다. Python 쪽으로 띄우면 이 문제가 없습니다 |
+| Windows 메뉴가 안 뜨거나 엉뚱한 곳에 뜸 | `py -3 pyserver\shellmenu.py "C:\경로"` 로 따로 시험해 보세요. 커서 위치에 메뉴가 뜨면 모듈은 정상이고, 좌표 문제라면 알려주세요 |
 | 터미널이 비어 있고 "세션이 종료되었습니다" | PowerShell 7 이 없을 수 있습니다. `config.json` 의 `defaultShell` 을 `"powershell"`(5.1) 로 바꿔 보세요 |
 | 프롬프트에 이상한 글자가 보임 | 셸 초기화 스크립트(`%LOCALAPPDATA%\poshdeck\psinit.ps1`)를 지우면 다시 생성됩니다 |
 | 한글이 깨짐 | 폰트를 Cascadia Mono 또는 D2Coding 으로. 출력 인코딩은 UTF-8 로 맞춰져 있습니다 |
