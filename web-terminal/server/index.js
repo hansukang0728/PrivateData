@@ -26,7 +26,8 @@ let PORT = Number(process.env.PORT) || CFG.port || 7788;
 app.use((req, res, next) => gate(PORT)(req, res, next));
 
 // xterm 은 web/vendor 에 붙박이로 들어 있다 (npm 없이도 뜨도록)
-app.use(express.static(path.join(ROOT, "web"), { index: "index.html" }));
+app.use(express.static(path.join(ROOT, "web"), { index: "index.html", etag: false, lastModified: false,
+  setHeaders: res => res.setHeader("Cache-Control", "no-store, must-revalidate") }));
 
 const ok = (res, body) => res.json({ ok: true, ...body });
 const fail = (res, e) => res.status(400).json({ ok: false, error: e.message || String(e) });

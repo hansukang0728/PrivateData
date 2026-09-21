@@ -164,7 +164,9 @@ class Handler(BaseHTTPRequestHandler):
         elif full.endswith(".html"):
             ctype = "text/html; charset=utf-8"
         with open(full, "rb") as f:
-            self._send(f.read(), ctype or "application/octet-stream")
+            # 캐시를 두지 않는다 — git pull 후 새로고침 한 번으로 바로 반영되도록
+            self._send(f.read(), ctype or "application/octet-stream",
+                       extra={"Cache-Control": "no-store, must-revalidate"})
 
     def _api_get(self, path, qs):
         try:
@@ -335,6 +337,9 @@ def main():
     print()
     print("  이 주소에는 1회용 토큰이 들어 있습니다. 다른 사람에게 주지 마세요.")
     print("  종료하려면 이 창에서 Ctrl+C.")
+    print()
+    print("  git pull 로 받은 변경 중 화면(web/) 쪽은 새로고침만 하면 되고,")
+    print("  서버(pyserver/) 쪽은 이 창을 Ctrl+C 로 끄고 다시 실행해야 합니다.")
     print()
     if not NO_OPEN:
         threading.Timer(0.4, lambda: webbrowser.open(url)).start()
