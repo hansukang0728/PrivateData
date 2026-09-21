@@ -25,12 +25,7 @@ app.use(express.json({ limit: "2mb" }));
 let PORT = Number(process.env.PORT) || CFG.port || 7788;
 app.use((req, res, next) => gate(PORT)(req, res, next));
 
-const vendor = (name, sub) => express.static(path.join(ROOT, "node_modules", name, sub));
-app.use("/vendor/xterm", vendor("@xterm/xterm", ""));
-app.use("/vendor/addon-fit", vendor("@xterm/addon-fit", "lib"));
-app.use("/vendor/addon-search", vendor("@xterm/addon-search", "lib"));
-app.use("/vendor/addon-webgl", vendor("@xterm/addon-webgl", "lib"));
-app.use("/vendor/addon-unicode11", vendor("@xterm/addon-unicode11", "lib"));
+// xterm 은 web/vendor 에 붙박이로 들어 있다 (npm 없이도 뜨도록)
 app.use(express.static(path.join(ROOT, "web"), { index: "index.html" }));
 
 const ok = (res, body) => res.json({ ok: true, ...body });

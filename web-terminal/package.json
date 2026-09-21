@@ -3,19 +3,16 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Chrome에서 여는 PowerShell 작업대 — 탐색기 + 부모/자식 터미널 그룹",
+  "description": "Chrome에서 여는 PowerShell 작업대 — 탐색기 + 부모/자식 터미널 그룹 (Python 백엔드 권장, Node 백엔드 선택)",
   "main": "server/index.js",
   "scripts": {
     "start": "node server/index.js",
     "start:noopen": "node server/index.js --no-open"
   },
-  "engines": { "node": ">=18" },
+  "engines": {
+    "node": ">=18"
+  },
   "dependencies": {
-    "@xterm/addon-fit": "^0.10.0",
-    "@xterm/addon-search": "^0.15.0",
-    "@xterm/addon-unicode11": "^0.8.0",
-    "@xterm/addon-webgl": "^0.18.0",
-    "@xterm/xterm": "^5.5.0",
     "express": "^4.21.2",
     "node-pty": "^1.0.0",
     "ws": "^8.18.0"

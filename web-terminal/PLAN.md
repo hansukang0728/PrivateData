@@ -44,8 +44,11 @@ Chrome에서 열리는 웹 UI로, 좌측 파일 탐색기 + 우측 다중 PowerS
 
 ## 3. 기술 스택
 
-- **서버**: Node.js 20+, Express, `ws`, [`node-pty`](https://github.com/microsoft/node-pty) (ConPTY 사용), `trash`(휴지통 삭제), `chokidar`(탐색기 자동 갱신)
-- **프론트**: 프레임워크 없이 ES 모듈 + [`xterm.js`](https://xtermjs.org) (`fit`, `search`, `webgl`, `serialize`, `unicode11` 애드온)
+- **서버(기본)**: Python 3.8+ **표준 라이브러리만**. ConPTY 를 `ctypes` 로 직접 호출하고,
+  WebSocket(RFC 6455)도 직접 구현했다 — 설치를 못 하는 환경(회사 PC 등)에서도 돌아야 하기 때문
+- **서버(선택)**: Node.js 18+, Express, `ws`, [`node-pty`](https://github.com/microsoft/node-pty)
+- **프론트**: 프레임워크 없이 ES 모듈 + [`xterm.js`](https://xtermjs.org) (`fit`, `search`, `webgl`, `unicode11` 애드온).
+  npm 없이도 뜨도록 배포본을 `web/vendor/` 에 붙박이로 포함했다
 - **셸**: 기본 `pwsh.exe`(PowerShell 7), 없으면 `powershell.exe`(5.1), 선택지로 `cmd.exe` / WSL
 
 ## 4. API 설계
@@ -121,7 +124,7 @@ Windows Terminal color scheme JSON과 같은 키(`background`, `foreground`, `bl
 | M2 | 탭 다중화 · 이름 편집 · 그룹(부모–자식) 분할 | 요구 3·4 완료 · SPEC-groups.md 구현 |
 | M3 | 탐색기 트리 + 컨텍스트 메뉴 | 요구 3 완료 |
 | M4 | 테마 엔진 · 스크롤백 · 검색 · 세션 복원 | 요구 5·6 완료 |
-| M5 | 설정 저장, 단축키, 패키징(`npx poshdeck`) | 배포본 |
+| M5 | 설정 저장, 단축키, 무설치 실행(`poshdeck.bat`) | 배포본 |
 
 ## 10. 보안 주의
 
