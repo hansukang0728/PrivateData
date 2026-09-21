@@ -131,6 +131,11 @@ body{margin:0; background:var(--paper); color:var(--ink);
 .tabadd:hover{color:var(--fg)}
 .tabbar .right{margin-left:auto; display:flex; align-items:center; gap:2px; padding-right:8px; color:var(--dim); font-size:11px}
 .tabbar .right b{font-weight:400; padding:3px 7px; border-radius:5px; cursor:default}
+.tabbar .right .fs{display:flex; align-items:center; gap:0; border:1px solid var(--line); border-radius:6px; margin-right:6px; overflow:hidden}
+.tabbar .right .fs b{border-radius:0; padding:3px 8px; cursor:pointer}
+.tabbar .right .fs b:active{background:color-mix(in srgb, var(--acc) 34%, transparent)}
+.tabbar .right .fs .val{font-family:"JetBrains Mono",monospace; font-size:10.5px; min-width:42px; text-align:center;
+     border-inline:1px solid var(--line); cursor:pointer}
 .tabbar .right b:hover{background:color-mix(in srgb, var(--acc) 15%, transparent); color:var(--fg)}
 
 /* panes: parent left, children stacked right */
@@ -165,9 +170,8 @@ body{margin:0; background:var(--paper); color:var(--ink);
         white-space:nowrap; flex:0 0 auto; line-height:1.5}
 .badge.run{color:var(--green); border-color:color-mix(in srgb, var(--green) 45%, transparent)}
 .term{flex:1; overflow-y:auto; padding:8px 12px 12px; font-family:"JetBrains Mono", ui-monospace, Consolas, monospace;
-      font-size:12.5px; line-height:1.55; white-space:pre-wrap; word-break:break-word; scrollbar-color:var(--line) transparent}
+      font-size:13px; line-height:1.55; white-space:pre-wrap; word-break:break-word; scrollbar-color:var(--line) transparent}
 .term::-webkit-scrollbar{width:10px} .term::-webkit-scrollbar-thumb{background:var(--line); border-radius:6px}
-.kids .term{font-size:12px}
 .ps{color:var(--green)} .path{color:var(--cyan)} .cmd{color:var(--fg)} .arrow{color:var(--dim)}
 .o-dim{color:var(--dim)} .o-red{color:var(--red)} .o-green{color:var(--green)} .o-yel{color:var(--yellow)}
 .o-blue{color:var(--blue)} .o-mag{color:var(--magenta)} .o-cyan{color:var(--cyan)} .o-head{color:var(--fg); font-weight:700}
@@ -254,7 +258,11 @@ body{margin:0; background:var(--paper); color:var(--ink);
         <div class="tabbar">
           <div class="tabs" id="tabs"></div>
           <div class="tabadd" id="tabadd" title="새 그룹 (Ctrl+Shift+T)">&#43;</div>
-          <div class="right"><b title="검색 Ctrl+F">&#8981; 검색</b><b title="설정">&#9881;</b></div>
+          <div class="right">
+            <span class="fs" title="글자 크기 — Ctrl +/− · 페인 위에서 Ctrl+휠은 그 창만">
+              <b id="fsDown">A&#8722;</b><b class="val" id="fsVal">13px</b><b id="fsUp">A&#43;</b>
+            </span>
+            <b title="검색 Ctrl+F">&#8981; 검색</b><b title="설정">&#9881;</b></div>
         </div>
         <div class="panes" id="panes"></div>
       </section>
@@ -320,7 +328,8 @@ function leaf(p){ return p.split("\\").pop(); }
 const KC = ["cyan","magenta","yellow","green"];   // 자식 구분색 — 탭과 페인이 같은 색으로 짝지어진다
 const SHELL_LABEL = {pwsh:"PowerShell 7.4.6", powershell:"Windows PowerShell 5.1", cmd:"cmd.exe", wsl:"Ubuntu 24.04"};
 let SEQ = 0, CLOCK = 0;
-const S = { layout:"ide", theme:"tokyonight", maxVisible:3, expHidden:false,
+const FS_MIN = 9, FS_MAX = 22, FS_DEF = 13;
+const S = { layout:"ide", theme:"tokyonight", maxVisible:3, expHidden:false, fontSize:FS_DEF,
             groups:[], terms:{}, activeGroup:null, focusedTerm:null, sel:ROOT+"\\data" };
 
 function mkTerm(o){
@@ -512,7 +521,8 @@ $("#notes").innerHTML = LAYOUTS.map(l => `<article class="note" data-k="${l.k}">
       <li>부모를 닫으면 그룹 전체가 닫힙니다</li>
       <li>탭 우클릭 → 독립 그룹으로 <b>승격</b></li>
       <li>자식마다 <b>색·번호</b> 고정 · <b>Alt+1~3</b> 으로 이동</li>
-      <li>접힌 자식은 아래 <b>막대</b>로 남아 한 번에 복귀</li></ul></article>`;
+      <li>접힌 자식은 아래 <b>막대</b>로 남아 한 번에 복귀</li>
+      <li><b>Ctrl +/−</b> 전체 글자 크기 · <b>Ctrl+휠</b> 은 그 창만</li></ul></article>`;
 $("#notes").addEventListener("click", e => { const n = e.target.closest(".note[data-k]"); if (n) applyLayout(n.dataset.k); });
 
 // ============================================================ explorer
@@ -700,6 +710,8 @@ function paneHTML(t, isParent){
   const kc = isParent ? "var(--acc)" : `var(--${t.hue||"cyan"})`;
   const no = isParent ? "" : `<span class="kidno">${g.children.indexOf(t.id)+1}</span>`;
   const style = `--kc:${kc}` + (isParent ? `; flex:0 0 ${Math.round(g.ratio*100)}%` : "");
+  const fs = t.fs || S.fontSize;
+  const fsBadge = t.fs ? `<span class="badge" title="이 창만 ${t.fs}px — Ctrl+0 으로 초기화">Aa ${t.fs}</span>` : "";
   return `<div class="pane ${isParent?"parent":"kid"} ${live?"focus":""}" data-id="${t.id}" style="${style}">
     <div class="pane-head">
       ${no}
@@ -707,12 +719,13 @@ function paneHTML(t, isParent){
       <span class="ph-cwd" title="${esc(t.cwd)}">${esc(isParent ? t.cwd : shortPath(t.cwd))}</span>
       ${t.running?'<span class="badge run" title="실행 중인 프로세스가 있어 접기에서 보호됩니다">● 실행</span>':""}
       ${moved?`<span class="badge" title="태어난 곳: ${esc(t.birthCwd)}">&#10548; 이동</span>`:""}
+      ${fsBadge}
       <span class="ph-act">
         ${isParent?'<b class="add" data-add="'+t.id+'" title="자식 터미널 추가 (Ctrl+Shift+D)">&#43;</b>':""}
         <b data-close="${t.id}" title="${isParent?"그룹 닫기":"닫기"}">&times;</b>
       </span>
     </div>
-    <div class="term" data-term="${t.id}">${t.lines.map(lineHTML).join("\n")}${t.lines.length?"\n":""}${prompt}</div>
+    <div class="term" data-term="${t.id}" style="font-size:${fs}px">${t.lines.map(lineHTML).join("\n")}${t.lines.length?"\n":""}${prompt}</div>
   </div>`;
 }
 function foldedBarHTML(t, no){
@@ -776,6 +789,28 @@ function renamePane(id){
   inp.addEventListener("blur", () => done(true));
   inp.addEventListener("mousedown", ev => ev.stopPropagation());
 }
+// ── 글자 크기 ────────────────────────────────────────────────
+function setFont(delta, absolute){
+  S.fontSize = Math.max(FS_MIN, Math.min(FS_MAX, absolute !== undefined ? absolute : S.fontSize + delta));
+  Object.values(S.terms).forEach(t => delete t.fs);    // 창별 조정은 전체 조정에 양보한다
+  $("#fsVal").textContent = S.fontSize + "px";
+  render(); focusTerm();
+}
+function setPaneFont(id, delta){                        // Ctrl+휠 — 이 창만
+  const t = S.terms[id]; if (!t) return;
+  t.fs = Math.max(FS_MIN, Math.min(FS_MAX, (t.fs || S.fontSize) + delta));
+  renderPanes();
+}
+$("#fsDown").addEventListener("click", () => setFont(-1));
+$("#fsUp").addEventListener("click", () => setFont(+1));
+$("#fsVal").addEventListener("click", () => { setFont(0, FS_DEF); toast(`글자 크기 ${FS_DEF}px — 기본값`); });
+$("#panes").addEventListener("wheel", e => {
+  if (!e.ctrlKey) return;
+  const pane = e.target.closest(".pane"); if (!pane) return;
+  e.preventDefault();
+  setPaneFont(Number(pane.dataset.id), e.deltaY < 0 ? +1 : -1);
+}, {passive:false});
+
 function focusTerm(){ $("#ghost").focus({preventScroll:true}); }
 
 // ============================================================ fake shell
@@ -838,6 +873,7 @@ function runCmd(t, raw){
       {h:'  <span class="o-cyan">stop</span>                     실행 중 상태 해제'},
       {h:'  <span class="o-cyan">cls</span> / <span class="o-cyan">pwd</span> / <span class="o-cyan">git log</span>'},{h:""},
       {h:'<span class="o-dim">Alt+1~3 — 자식 번호로 이동 · Alt+0 — 부모로 · F2 — 이름 바꾸기</span>'},
+      {h:'<span class="o-dim">Ctrl +/− — 글자 크기 · Ctrl+0 — 기본값 · Ctrl+휠 — 그 창만</span>'},
       {h:'<span class="o-dim">Ctrl+Shift+D — 부모에서 자식 만들기 (자식 페인에서 눌러도 부모 기준)</span>'},{h:""});
   }
   else if (v === "python" || v === "py"){
@@ -881,12 +917,16 @@ document.addEventListener("keydown", e => {
     const id = g.children[Number(e.key) - 1];
     if (id){ e.preventDefault(); unfold(id); render(); focusTerm(); }
   }
+  if (e.ctrlKey && (e.key === "=" || e.key === "+")){ e.preventDefault(); return setFont(+1); }
+  if (e.ctrlKey && e.key === "-"){ e.preventDefault(); return setFont(-1); }
+  if (e.ctrlKey && e.key === "0"){ e.preventDefault(); toast(`글자 크기 ${FS_DEF}px — 기본값`); return setFont(0, FS_DEF); }
   if (e.altKey && e.key === "0"){                  // Alt+0 — 부모로
     const g = S.groups.find(g => g.id === S.activeGroup);
     e.preventDefault(); S.focusedTerm = g.parentId; render(); focusTerm();
   }
 });
 S.groups.forEach(g => enforceVisible(g, true));   // 부팅 시에도 한도를 지킨다
+$("#fsVal").textContent = S.fontSize + "px";
 applyTheme("tokyonight");
 applyLayout("ide");
 document.querySelectorAll("#maxv .chip").forEach(x => x.setAttribute("aria-pressed", String(Number(x.dataset.n)===S.maxVisible)));
