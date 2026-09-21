@@ -86,9 +86,12 @@ body{background:#14151c; color:#c8ccd8;
 .kids .pane.focus{border-color:color-mix(in srgb, var(--kc) 70%, var(--line));
       box-shadow:0 0 0 1px color-mix(in srgb, var(--kc) 45%, transparent), 0 4px 14px -4px rgba(0,0,0,.6)}
 .pane.parent.focus::before{content:""; position:absolute; inset:0; border:1px solid var(--acc); pointer-events:none; z-index:3; opacity:.5}
-.splitter{flex:0 0 5px; cursor:col-resize; position:relative}
-.splitter::after{content:""; position:absolute; inset:0 2px; background:var(--line)}
-.splitter:hover::after{background:var(--acc)}
+.splitter{flex:0 0 7px; cursor:col-resize; position:relative; z-index:4}
+.splitter::after{content:""; position:absolute; inset:0 3px; background:var(--line); border-radius:2px}
+.splitter:hover::after,.splitter.on::after{background:var(--acc); inset:0 2px}
+.hsplit{flex:0 0 7px; cursor:row-resize; position:relative; margin:-3px 0; z-index:4}
+.hsplit::after{content:""; position:absolute; inset:3px 18px; background:var(--line); border-radius:2px; opacity:.55}
+.hsplit:hover::after,.hsplit.on::after{background:var(--acc); opacity:1; inset:2px 0}
 
 .pane-head{display:flex; align-items:center; gap:7px; font-size:11px; color:var(--dim); padding:5px 6px 5px 11px;
            border-bottom:1px solid var(--line); background:var(--chrome); flex:0 0 auto; position:relative; flex-wrap:nowrap}
@@ -111,7 +114,14 @@ body{background:#14151c; color:#c8ccd8;
 .badge.run{color:var(--green); border-color:color-mix(in srgb, var(--green) 45%, transparent)}
 .badge.dead{color:var(--red); border-color:color-mix(in srgb, var(--red) 45%, transparent)}
 .host{flex:1; min-height:0; padding:4px 2px 2px 8px}
-.host .xterm{height:100%}
+.host .xterm{height:100%; padding-right:10px}
+/* 오른쪽 10px 를 비워두면 터미널 캔버스가 스크롤바 자리를 덮지 못한다.
+   xterm 의 fit 이 이 padding 을 빼고 열 수를 계산해 주기 때문. 오버레이/고전 스크롤바 양쪽에서 안전하다. */
+/* 스크롤바가 자리를 차지하게 만든다 — 안 그러면 터미널 화면이 그 위를 덮는다 */
+.host .xterm-viewport::-webkit-scrollbar{width:11px}
+.host .xterm-viewport::-webkit-scrollbar-track{background:transparent}
+.host .xterm-viewport::-webkit-scrollbar-thumb{background:var(--line); border-radius:6px; border:2px solid transparent; background-clip:content-box}
+.host .xterm-viewport::-webkit-scrollbar-thumb:hover{background:var(--dim); background-clip:content-box}
 
 .fbar{flex:0 0 auto; display:flex; align-items:center; gap:8px; height:25px; padding:0 7px 0 11px; cursor:pointer;
       border:1px solid var(--line); border-radius:7px; background:var(--chrome); color:var(--dim); font-size:11px; position:relative}

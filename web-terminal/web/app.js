@@ -54,7 +54,7 @@ function paneOf(t) {
 }
 
 function newGroup(cwd, shell, opts = {}) {
-  const g = { id: opts.id || "g" + uid(), parentId: null, children: [], visible: [], ratio: opts.ratio || 0.6 };
+  const g = { id: opts.id || "g" + uid(), parentId: null, children: [], visible: [], sizes: {}, ratio: opts.ratio || 0.6 };
   const p = mkTerm({ id: opts.parentId, groupId: g.id, role: "parent", cwd, shell, name: opts.name });
   g.parentId = p.id;
   S.groups.push(g);
@@ -145,7 +145,7 @@ function promote(id) {                                    // 자식 → 독립 �
   const g = groupOf(id), t = S.terms[id];
   g.children = g.children.filter(x => x !== id);
   g.visible = g.visible.filter(x => x !== id);
-  const ng = { id: "g" + uid(), parentId: id, children: [], visible: [], ratio: 0.6 };
+  const ng = { id: "g" + uid(), parentId: id, children: [], visible: [], sizes: {}, ratio: 0.6 };
   S.groups.push(ng);
   t.groupId = ng.id; t.role = "parent"; t.hue = null;
   S.activeGroup = ng.id; S.focusedTerm = id;
@@ -213,18 +213,28 @@ function renderPanes() {
   const kids = g.children.filter(id => g.visible.includes(id)).map(id => S.terms[id]).filter(Boolean);
   const folded = g.children.filter(id => !g.visible.includes(id));
 
+  if (!g.sizes) g.sizes = {};
+  const hasRight = kids.length || folded.length;
+
   const pp = paneOf(parent);
   pp.el.classList.add("parent");
-  pp.el.style.flex = `0 0 ${Math.round(g.ratio * 100)}%`;
+  pp.el.style.flex = hasRight ? `0 0 ${Math.round(g.ratio * 100)}%` : "1 1 auto";   // 혼자면 창 전체
 
   const nodes = [pp.el];
-  if (kids.length || folded.length) {
+  if (hasRight) {
     const splitter = document.createElement("div");
     splitter.className = "splitter";
+    splitter.title = "끌어서 좌우 폭 조절";
     splitter.addEventListener("mousedown", startDrag);
     const kidsEl = document.createElement("div");
     kidsEl.className = "kids";
-    kids.forEach(t => { const p = paneOf(t); p.el.classList.remove("parent"); p.el.style.flex = ""; kidsEl.appendChild(p.el); });
+    kids.forEach((t, i) => {
+      if (i) kidsEl.appendChild(hsplit(kids[i - 1].id, t.id));
+      const p = paneOf(t);
+      p.el.classList.remove("parent");
+      p.el.style.flex = `${g.sizes[t.id] ?? 1} 1 0`;
+      kidsEl.appendChild(p.el);
+    });
     folded.forEach(id => kidsEl.appendChild(foldedBar(S.terms[id], g.children.indexOf(id) + 1)));
     nodes.push(splitter, kidsEl);
   }
@@ -253,8 +263,44 @@ function updateStatus() {
   $("#stGroup").textContent = `그룹: ${S.terms[g.parentId].name} · 자식 ${g.children.length} (화면 ${g.visible.length}/${S.maxVisible})`;
 }
 
+function hsplit(aId, bId) {
+  const el = document.createElement("div");
+  el.className = "hsplit";
+  el.title = "끌어서 위아래 높이 조절";
+  el.addEventListener("mousedown", e => startKidDrag(e, el, aId, bId));
+  return el;
+}
+
+function startKidDrag(e, handle, aId, bId) {
+  e.preventDefault(); e.stopPropagation();
+  const g = activeGroup();
+  const A = panes.get(aId), B = panes.get(bId);
+  if (!A || !B) return;
+  handle.classList.add("on");
+  const aH = A.el.getBoundingClientRect().height, bH = B.el.getBoundingClientRect().height;
+  const total = aH + bH, startY = e.clientY;
+  const aS = g.sizes[aId] ?? 1, bS = g.sizes[bId] ?? 1, sum = aS + bS;
+
+  const move = ev => {
+    const h = Math.min(total - 70, Math.max(70, aH + (ev.clientY - startY)));
+    g.sizes[aId] = sum * (h / total);
+    g.sizes[bId] = sum * (1 - h / total);
+    A.el.style.flex = `${g.sizes[aId]} 1 0`;
+    B.el.style.flex = `${g.sizes[bId]} 1 0`;
+    A.refit(); B.refit();
+  };
+  const up = () => {
+    handle.classList.remove("on");
+    removeEventListener("mousemove", move); removeEventListener("mouseup", up);
+    save();
+  };
+  addEventListener("mousemove", move); addEventListener("mouseup", up);
+}
+
 function startDrag(e) {
   e.preventDefault();
+  e.currentTarget.classList.add("on");
+  const handle = e.currentTarget;
   const g = activeGroup();
   const box = $("#panes").getBoundingClientRect();
   const move = ev => {
@@ -263,7 +309,11 @@ function startDrag(e) {
     if (p) { p.el.style.flex = `0 0 ${Math.round(g.ratio * 100)}%`; p.refit(); }
     groupTerms(g).forEach(id => panes.get(id)?.refit());
   };
-  const up = () => { removeEventListener("mousemove", move); removeEventListener("mouseup", up); save(); };
+  const up = () => {
+    handle.classList.remove("on");
+    removeEventListener("mousemove", move); removeEventListener("mouseup", up);
+    save();
+  };
   addEventListener("mousemove", move); addEventListener("mouseup", up);
 }
 
@@ -560,7 +610,7 @@ function restore(w) {
              birthCwd: t.birthCwd, shell: t.shell, hue: t.hue, fs: t.fs });
   }
   S.groups = w.groups.filter(g => S.terms[g.parentId]).map(g => ({
-    id: g.id, parentId: g.parentId, ratio: g.ratio || 0.6,
+    id: g.id, parentId: g.parentId, ratio: g.ratio || 0.6, sizes: g.sizes || {},
     children: (g.children || []).filter(id => S.terms[id]),
     visible: (g.visible || []).filter(id => S.terms[id])
   }));

@@ -1,8 +1,20 @@
 let el = null;
+let closer = null;
 
-export function closeMenu() { if (el) { el.remove(); el = null; } }
-document.addEventListener("click", closeMenu);
+export function closeMenu() {
+  if (closer) { document.removeEventListener("mousedown", closer, true); closer = null; }
+  if (el) { el.remove(); el = null; }
+}
 document.addEventListener("keydown", e => { if (e.key === "Escape") closeMenu(); });
+
+// 메뉴를 연 클릭이 그대로 이어져 메뉴를 닫아버리지 않도록, 닫기 감시는 한 박자 뒤에 건다
+function armCloser(menuEl) {
+  requestAnimationFrame(() => {
+    if (el !== menuEl) return;
+    closer = ev => { if (!menuEl.contains(ev.target)) closeMenu(); };
+    document.addEventListener("mousedown", closer, true);
+  });
+}
 
 // items: {t, i?, k?, act?, sub?, sep?, cap?, dis?, hot?, dot?}
 export function showMenu(x, y, items) {
@@ -11,6 +23,7 @@ export function showMenu(x, y, items) {
   el.className = "menu";
   el.innerHTML = items.map(render).join("");
   document.body.appendChild(el);
+  armCloser(el);
   const r = el.getBoundingClientRect();
   el.style.left = Math.max(4, Math.min(x, innerWidth - r.width - 8)) + "px";
   el.style.top  = Math.max(4, Math.min(y, innerHeight - r.height - 8)) + "px";

@@ -13,8 +13,13 @@ const VARS = ["bg","fg","dim","chrome","panel","line","acc","red","green","yello
 
 export function applyTheme(appEl, key) {
   const t = THEMES[key] || THEMES.tokyonight;
-  VARS.forEach(v => appEl.style.setProperty("--" + v, t[v]));
+  // 메뉴·토스트는 .app 밖(body 바로 아래)에 붙으므로 :root 에도 같은 값을 꽂아야 한다
+  VARS.forEach(v => {
+    appEl.style.setProperty("--" + v, t[v]);
+    document.documentElement.style.setProperty("--" + v, t[v]);
+  });
   document.body.style.background = t.bg;
+  document.body.style.color = t.fg;
   return xtermTheme(t);
 }
 
