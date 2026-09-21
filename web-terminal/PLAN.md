@@ -88,7 +88,9 @@ Chrome에서 열리는 웹 UI로, 좌측 파일 탐색기 + 우측 다중 PowerS
 | Windows 탐색기에서 표시 | | `shell/reveal` |
 | 속성 | Alt+Enter | `shell/properties` |
 
-## 6. 터미널 탭
+## 6. 터미널 탭 · 그룹
+
+> 부모–자식 그룹 구조는 [`SPEC-groups.md`](SPEC-groups.md)에서 확정했다. 아래는 탭 자체의 기본 동작.
 
 - 탭 추가(+) / 닫기(x) / 드래그 재정렬 / Ctrl+Tab 순환
 - **이름 편집**: 더블클릭 또는 F2 → 인라인 입력 → Enter 확정, Esc 취소. 기본 이름은 `폴더명 — pwsh`
@@ -116,7 +118,7 @@ Windows Terminal color scheme JSON과 같은 키(`background`, `foreground`, `bl
 |---|---|---|
 | M0 | 목업 확정 (현재 단계) | `mockups/index.html` — 레이아웃 3안 · 테마 8종 |
 | M1 | 서버 뼈대 + PTY 1개 연결 | 브라우저에서 PowerShell 입출력 성공 |
-| M2 | 탭 다중화 · 이름 편집 · 분할 | 요구 3·4 완료 |
+| M2 | 탭 다중화 · 이름 편집 · 그룹(부모–자식) 분할 | 요구 3·4 완료 · SPEC-groups.md 구현 |
 | M3 | 탐색기 트리 + 컨텍스트 메뉴 | 요구 3 완료 |
 | M4 | 테마 엔진 · 스크롤백 · 검색 · 세션 복원 | 요구 5·6 완료 |
 | M5 | 설정 저장, 단축키, 패키징(`npx poshdeck`) | 배포본 |
