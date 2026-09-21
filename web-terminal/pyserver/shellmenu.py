@@ -37,7 +37,53 @@ class GUID(ctypes.Structure):
 
     def __init__(self, text):
         super().__init__()
-        ole32.CLSIDFromString(wt.LPCWSTR(text), ctypes.byref(self))
+        ole32.CLSIDFromString(text, ctypes.byref(self))
+
+
+LRESULT = ctypes.c_longlong if ctypes.sizeof(ctypes.c_void_p) == 8 else ctypes.c_long
+LPVOID = ctypes.c_void_p
+
+# 반환형을 선언하지 않으면 ctypes 가 32비트 int 로 받아 64비트 핸들이 잘린다.
+# 이 선언이 빠지면 CreateWindowExW 가 0 을 돌려주고 메뉴를 띄울 수 없다.
+ole32.CLSIDFromString.argtypes = [wt.LPCWSTR, ctypes.POINTER(GUID)]
+ole32.CLSIDFromString.restype = ctypes.c_long
+ole32.CoInitializeEx.argtypes = [LPVOID, wt.DWORD]
+ole32.CoInitializeEx.restype = ctypes.c_long
+ole32.CoTaskMemFree.argtypes = [LPVOID]
+ole32.CoTaskMemFree.restype = None
+
+shell32.SHParseDisplayName.argtypes = [wt.LPCWSTR, LPVOID, ctypes.POINTER(LPVOID), wt.ULONG, ctypes.POINTER(wt.ULONG)]
+shell32.SHParseDisplayName.restype = ctypes.c_long
+shell32.SHBindToParent.argtypes = [LPVOID, ctypes.POINTER(GUID), ctypes.POINTER(LPVOID), ctypes.POINTER(LPVOID)]
+shell32.SHBindToParent.restype = ctypes.c_long
+
+kernel32.GetModuleHandleW.argtypes = [wt.LPCWSTR]
+kernel32.GetModuleHandleW.restype = wt.HMODULE
+
+user32.CreateWindowExW.argtypes = [wt.DWORD, wt.LPCWSTR, wt.LPCWSTR, wt.DWORD,
+                                   ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int,
+                                   wt.HWND, wt.HMENU, wt.HINSTANCE, LPVOID]
+user32.CreateWindowExW.restype = wt.HWND
+user32.DestroyWindow.argtypes = [wt.HWND]
+user32.DestroyWindow.restype = wt.BOOL
+user32.ShowWindow.argtypes = [wt.HWND, ctypes.c_int]
+user32.ShowWindow.restype = wt.BOOL
+user32.SetForegroundWindow.argtypes = [wt.HWND]
+user32.SetForegroundWindow.restype = wt.BOOL
+user32.CreatePopupMenu.argtypes = []
+user32.CreatePopupMenu.restype = wt.HMENU
+user32.DestroyMenu.argtypes = [wt.HMENU]
+user32.DestroyMenu.restype = wt.BOOL
+user32.TrackPopupMenuEx.argtypes = [wt.HMENU, wt.UINT, ctypes.c_int, ctypes.c_int, wt.HWND, LPVOID]
+user32.TrackPopupMenuEx.restype = ctypes.c_int
+user32.DefWindowProcW.argtypes = [wt.HWND, wt.UINT, wt.WPARAM, wt.LPARAM]
+user32.DefWindowProcW.restype = LRESULT
+user32.PostMessageW.argtypes = [wt.HWND, wt.UINT, wt.WPARAM, wt.LPARAM]
+user32.PostMessageW.restype = wt.BOOL
+user32.GetCursorPos.argtypes = [ctypes.POINTER(wt.POINT)]
+user32.GetCursorPos.restype = wt.BOOL
+user32.GetForegroundWindow.argtypes = []
+user32.GetForegroundWindow.restype = wt.HWND
 
 
 IID_IShellFolder = GUID("{000214E6-0000-0000-C000-000000000046}")
@@ -91,8 +137,7 @@ class CMINVOKECOMMANDINFOEX(ctypes.Structure):
 # 셸 확장이 그리는 메뉴(아이콘·하위 메뉴)는 창 프로시저가 메시지를 넘겨줘야 채워진다
 _ctx2 = ctypes.c_void_p()
 _ctx3 = ctypes.c_void_p()
-WNDPROC = ctypes.WINFUNCTYPE(ctypes.c_longlong if ctypes.sizeof(ctypes.c_void_p) == 8 else ctypes.c_long,
-                             wt.HWND, wt.UINT, wt.WPARAM, wt.LPARAM)
+WNDPROC = ctypes.WINFUNCTYPE(LRESULT, wt.HWND, wt.UINT, wt.WPARAM, wt.LPARAM)
 
 
 @WNDPROC
@@ -112,22 +157,33 @@ def _wndproc(hwnd, msg, wparam, lparam):
 
 _class_registered = False
 _CLASS_NAME = "PoshDeckShellMenu"
+_wndclass = None                    # 등록 후에도 살아 있어야 한다 (GC 방지)
+
+
+class WNDCLASS(ctypes.Structure):
+    _fields_ = [("style", wt.UINT), ("lpfnWndProc", WNDPROC), ("cbClsExtra", ctypes.c_int),
+                ("cbWndExtra", ctypes.c_int), ("hInstance", wt.HINSTANCE), ("hIcon", wt.HANDLE),
+                ("hCursor", wt.HANDLE), ("hbrBackground", wt.HANDLE),
+                ("lpszMenuName", wt.LPCWSTR), ("lpszClassName", wt.LPCWSTR)]
+
+
+user32.RegisterClassW.argtypes = [ctypes.POINTER(WNDCLASS)]
+user32.RegisterClassW.restype = wt.ATOM
 
 
 def _ensure_class():
-    global _class_registered
+    global _class_registered, _wndclass
     if _class_registered:
         return
-    class WNDCLASS(ctypes.Structure):
-        _fields_ = [("style", wt.UINT), ("lpfnWndProc", WNDPROC), ("cbClsExtra", ctypes.c_int),
-                    ("cbWndExtra", ctypes.c_int), ("hInstance", wt.HINSTANCE), ("hIcon", wt.HANDLE),
-                    ("hCursor", wt.HANDLE), ("hbrBackground", wt.HANDLE),
-                    ("lpszMenuName", wt.LPCWSTR), ("lpszClassName", wt.LPCWSTR)]
     wc = WNDCLASS()
     wc.lpfnWndProc = _wndproc
     wc.hInstance = kernel32.GetModuleHandleW(None)
     wc.lpszClassName = _CLASS_NAME
-    user32.RegisterClassW(ctypes.byref(wc))
+    atom = user32.RegisterClassW(ctypes.byref(wc))
+    err = ctypes.get_last_error()
+    if not atom and err != 1410:                       # 1410 = 이미 등록됨
+        raise OSError(f"창 클래스를 등록하지 못했습니다 (RegisterClassW, GetLastError={err})")
+    _wndclass = wc
     _class_registered = True
 
 
@@ -140,6 +196,7 @@ def _show(path, x, y, extended=False):
     child = ctypes.c_void_p()
     menu = None
     hwnd = None
+    owned = False
     ctx = ctypes.c_void_p()
     try:
         hr = shell32.SHParseDisplayName(wt.LPCWSTR(path), None, ctypes.byref(pidl), 0, None)
@@ -165,10 +222,18 @@ def _show(path, x, y, extended=False):
         hwnd = user32.CreateWindowExW(WS_EX_TOOLWINDOW | WS_EX_TOPMOST, _CLASS_NAME, "",
                                       WS_POPUP, int(x), int(y), 1, 1, None, None,
                                       kernel32.GetModuleHandleW(None), None)
+        owned = bool(hwnd)
         if not hwnd:
-            raise OSError("메뉴를 걸 창을 만들지 못했습니다")
-        user32.ShowWindow(hwnd, SW_SHOWNA)
-        user32.SetForegroundWindow(hwnd)
+            # 우리 창을 못 만들었으면 앞에 있는 창(대개 브라우저)을 주인으로 쓴다.
+            # 셸 확장이 그리는 아이콘·하위 메뉴는 덜 나올 수 있지만 메뉴 자체는 뜬다.
+            err = ctypes.get_last_error()
+            hwnd = user32.GetForegroundWindow()
+            print(f"[PoshDeck] 전용 창 생성 실패(GetLastError={err}) — 앞 창을 주인으로 대신 씁니다")
+            if not hwnd:
+                raise OSError(f"메뉴를 걸 창을 만들지 못했습니다 (CreateWindowExW, GetLastError={err})")
+        else:
+            user32.ShowWindow(hwnd, SW_SHOWNA)
+            user32.SetForegroundWindow(hwnd)
 
         menu = user32.CreatePopupMenu()
         flags = CMF_EXPLORE | (CMF_EXTENDEDVERBS if extended else 0)
@@ -182,12 +247,13 @@ def _show(path, x, y, extended=False):
                                       int(x), int(y), hwnd, None)
         user32.PostMessageW(hwnd, 0, 0, 0)
         if cmd > 0:
+            verb_id = cmd - ID_FIRST                  # MAKEINTRESOURCE — 정수를 포인터 자리에 넣는다
             info = CMINVOKECOMMANDINFOEX()
             info.cbSize = ctypes.sizeof(CMINVOKECOMMANDINFOEX)
-            info.fMask = 0x00004000 | 0x00000004      # UNICODE | PTINVOKE 없이 단순 호출
+            info.fMask = 0x00004000                   # CMIC_MASK_UNICODE
             info.hwnd = hwnd
-            info.lpVerb = ctypes.c_char_p(cmd - ID_FIRST)
-            info.lpVerbW = ctypes.cast(ctypes.c_void_p(cmd - ID_FIRST), wt.LPCWSTR)
+            info.lpVerb = ctypes.cast(ctypes.c_void_p(verb_id), ctypes.c_char_p)
+            info.lpVerbW = ctypes.cast(ctypes.c_void_p(verb_id), wt.LPCWSTR)
             info.nShow = 1                            # SW_SHOWNORMAL
             info.lpDirectory = os.path.dirname(path).encode("mbcs", "replace")
             info.lpDirectoryW = os.path.dirname(path)
@@ -199,7 +265,7 @@ def _show(path, x, y, extended=False):
         _ctx2, _ctx3 = ctypes.c_void_p(), ctypes.c_void_p()
         if menu:
             user32.DestroyMenu(menu)
-        if hwnd:
+        if hwnd and owned:
             user32.DestroyWindow(hwnd)
         for p in (ctx, parent):
             _release(p)
@@ -227,13 +293,84 @@ def show_async(path, x, y, extended=False):
 
 if __name__ == "__main__":
     target = sys.argv[1] if len(sys.argv) > 1 else os.path.expanduser("~")
-    pt = wt.POINT()
-    user32.GetCursorPos(ctypes.byref(pt))
-    print(f"'{target}' 의 셸 메뉴를 커서 위치({pt.x}, {pt.y})에 띄웁니다...")
+    print("=" * 60)
+    print("  PoshDeck 셸 메뉴 진단")
+    print("=" * 60)
+    print(f"  대상: {target}")
+    print(f"  파이썬: {sys.version.split()[0]} ({ctypes.sizeof(ctypes.c_void_p) * 8}비트)")
+    print()
+
+    step = "준비"
     try:
+        step = "1) COM 초기화"
+        ole32.CoInitializeEx(None, COINIT_APARTMENTTHREADED)
+        print("  [ OK ]", step)
+
+        step = "2) 경로를 셸 항목으로 변환 (SHParseDisplayName)"
+        pidl = LPVOID()
+        hr = shell32.SHParseDisplayName(target, None, ctypes.byref(pidl), 0, None)
+        if hr != 0:
+            raise OSError(f"HRESULT 0x{hr & 0xFFFFFFFF:08X}")
+        print("  [ OK ]", step)
+
+        step = "3) 상위 폴더 인터페이스 (SHBindToParent)"
+        parent, child = LPVOID(), LPVOID()
+        hr = shell32.SHBindToParent(pidl, ctypes.byref(IID_IShellFolder), ctypes.byref(parent), ctypes.byref(child))
+        if hr != 0 or not parent:
+            raise OSError(f"HRESULT 0x{hr & 0xFFFFFFFF:08X}")
+        print("  [ OK ]", step)
+
+        step = "4) 컨텍스트 메뉴 인터페이스 (GetUIObjectOf)"
+        arr = (LPVOID * 1)(child)
+        ctx = LPVOID()
+        hr = _vcall(parent, 10, ctypes.c_long, wt.HWND, wt.UINT, LPVOID, LPVOID, LPVOID, ctypes.POINTER(LPVOID))(
+            parent, None, 1, arr, ctypes.byref(IID_IContextMenu), None, ctypes.byref(ctx))
+        if hr != 0 or not ctx:
+            raise OSError(f"HRESULT 0x{hr & 0xFFFFFFFF:08X}")
+        print("  [ OK ]", step)
+        print("        IContextMenu2:", "있음" if _query(ctx, IID_IContextMenu2) else "없음",
+              "· IContextMenu3:", "있음" if _query(ctx, IID_IContextMenu3) else "없음")
+
+        step = "5) 창 클래스 등록 (RegisterClassW)"
+        _ensure_class()
+        print("  [ OK ]", step)
+
+        step = "6) 창 생성 (CreateWindowExW)"
+        hinst = kernel32.GetModuleHandleW(None)
+        print(f"        모듈 핸들: 0x{(hinst or 0):X}")
+        hwnd = user32.CreateWindowExW(WS_EX_TOOLWINDOW | WS_EX_TOPMOST, _CLASS_NAME, "",
+                                      WS_POPUP, 0, 0, 1, 1, None, None, hinst, None)
+        if not hwnd:
+            raise OSError(f"GetLastError={ctypes.get_last_error()}")
+        print(f"  [ OK ] {step} — 핸들 0x{hwnd:X}")
+        user32.DestroyWindow(hwnd)
+
+        step = "7) 메뉴 채우기 (QueryContextMenu)"
+        menu = user32.CreatePopupMenu()
+        hr = _vcall(ctx, 3, ctypes.c_long, wt.HMENU, wt.UINT, wt.UINT, wt.UINT, wt.UINT)(
+            ctx, menu, 0, ID_FIRST, ID_LAST, CMF_EXPLORE)
+        if hr < 0:
+            raise OSError(f"HRESULT 0x{hr & 0xFFFFFFFF:08X}")
+        user32.GetMenuItemCount.argtypes = [wt.HMENU]
+        user32.GetMenuItemCount.restype = ctypes.c_int
+        print(f"  [ OK ] {step} — 항목 {user32.GetMenuItemCount(menu)}개")
+        user32.DestroyMenu(menu)
+
+        print()
+        print("  준비는 모두 통과했습니다. 실제로 메뉴를 띄웁니다...")
+        pt = wt.POINT()
+        user32.GetCursorPos(ctypes.byref(pt))
         _show(target, pt.x, pt.y)
-        print("메뉴가 닫혔습니다. (항목을 골랐다면 그 동작이 실행됩니다)")
+        print("  메뉴가 닫혔습니다. (항목을 골랐다면 그 동작이 실행됩니다)")
+        print()
+        print("  결과: 정상")
     except Exception as e:
         import traceback
-        print("실패:", e)
+        print(f"  [실패] {step}")
+        print(f"         {type(e).__name__}: {e}")
+        print()
         traceback.print_exc()
+        print()
+        print("  이 화면을 그대로 복사해서 알려주시면 바로 잡겠습니다.")
+    print("=" * 60)
+    input("\n엔터를 누르면 닫힙니다...")
