@@ -392,11 +392,46 @@ const explorer = createExplorer($("#tree"), {
 });
 let clip = null;
 
-$("#expUp").addEventListener("click", () => explorer.setRoot(explorer.parentOf(explorer.root)).then(() => $("#expRoot").textContent = explorer.root));
+$("#expUp").addEventListener("click", () => {
+  const up = explorer.parentOf(explorer.root);
+  if (!up || up === explorer.root) return toast("여기가 최상위입니다");
+  gotoRoot(up);
+});
 $("#expRefresh").addEventListener("click", () => explorer.refresh());
 $("#expNewDir").addEventListener("click", async () => {
   try { await api.mkdir(explorer.selected, "새 폴더"); await explorer.refresh(explorer.selected); } catch (e) { toast(e.message); }
 });
+async function renderDrives() {
+  let list = [];
+  try { list = (await api.drives()).drives || []; } catch (e) { toast("드라이브 목록을 읽지 못했습니다: " + e.message); }
+  $("#drives").innerHTML =
+    `<b data-home title="홈 폴더 — ${esc(S.home)}">&#8962; 홈</b>` +
+    list.map(d => `<b data-drive="${esc(d.path)}" title="${esc(d.path)}${d.kind ? ` — ${esc(d.kind)} 드라이브` : ""}">${esc(d.name)}</b>`).join("") +
+    `<b data-goto title="경로 직접 입력 — 네트워크 경로(\\\\서버\\공유)도 됩니다">경로…</b>`;
+}
+async function gotoRoot(path) {
+  try {
+    await api.list(path);                       // 먼저 읽히는지 확인하고 옮긴다
+    await explorer.setRoot(path);
+    $("#expRoot").textContent = explorer.root;
+    save();
+  } catch (e) { toast(`${path} — ${e.message}`); }
+}
+$("#drives").addEventListener("click", e => {
+  const b = e.target.closest("b"); if (!b) return;
+  if (b.dataset.home !== undefined) return gotoRoot(S.home);
+  if (b.dataset.drive) return gotoRoot(b.dataset.drive);
+  if (b.dataset.goto !== undefined) {
+    const p = prompt("이동할 경로를 입력하세요\n\n예: D:\\작업   또는   \\\\서버이름\\공유폴더", explorer.root);
+    if (p && p.trim()) gotoRoot(p.trim());
+  }
+});
+$("#expRoot").addEventListener("click", () => {
+  const p = prompt("이동할 경로를 입력하세요", explorer.root);
+  if (p && p.trim()) gotoRoot(p.trim());
+});
+$("#expRefresh").addEventListener("click", renderDrives);
+
 $("#railExp").addEventListener("click", toggleExplorer);
 function toggleExplorer() {
   S.expHidden = !S.expHidden;
@@ -568,6 +603,7 @@ function restore(w) {
   const root = w?.explorerRoot || S.home;
   await explorer.setRoot(root);
   $("#expRoot").textContent = explorer.root;
+  renderDrives();
 
   render();
   focus(S.focusedTerm);

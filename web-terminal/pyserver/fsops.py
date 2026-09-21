@@ -27,14 +27,31 @@ def guard(path, roots):
     raise PermissionError(f"허용되지 않은 경로입니다: {abs_path}")
 
 
+DRIVE_KIND = {2: "이동식", 3: "고정", 4: "네트워크", 5: "CD/DVD", 6: "램디스크"}
+
+
 def drives():
+    """드라이브 목록.
+
+    os.path.exists 로 A~Z 를 훑으면 디스크 없는 광학 드라이브나 끊긴 네트워크
+    드라이브에서 몇 초씩 멈춘다. GetLogicalDrives 는 비트마스크만 읽어 즉시 돌아온다.
+    """
     if not IS_WIN:
-        return [{"name": "/", "path": "/"}, {"name": "~", "path": os.path.expanduser("~")}]
+        return [{"name": "/", "path": "/", "kind": "고정"},
+                {"name": "~", "path": os.path.expanduser("~"), "kind": "홈"}]
+    import ctypes
+    k32 = ctypes.windll.kernel32
+    mask = k32.GetLogicalDrives()
     out = []
-    for c in range(ord("A"), ord("Z") + 1):
-        letter = f"{chr(c)}:\\"
-        if os.path.exists(letter):
-            out.append({"name": f"{chr(c)}:", "path": letter})
+    for i in range(26):
+        if not mask & (1 << i):
+            continue
+        letter = f"{chr(65 + i)}:\\"
+        try:
+            kind = DRIVE_KIND.get(k32.GetDriveTypeW(letter), "기타")
+        except Exception:
+            kind = "기타"
+        out.append({"name": f"{chr(65 + i)}:", "path": letter, "kind": kind})
     return out
 
 

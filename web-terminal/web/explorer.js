@@ -88,7 +88,12 @@ export function createExplorer(treeEl, hooks) {
     inp.addEventListener("blur", () => done(true));
   }
 
-  const parentOf = p => p.replace(/[\\/][^\\/]+[\\/]?$/, "") || p;
+  const parentOf = p => {
+    if (/^[A-Za-z]:[\\/]?$/.test(p) || p === "/" || /^\\\\[^\\/]+[\\/]?[^\\/]*[\\/]?$/.test(p)) return p;  // 드라이브·UNC 루트
+    const up = p.replace(/[\\/]+$/, "").replace(/[\\/][^\\/]+$/, "");
+    if (!up) return "/";
+    return /^[A-Za-z]:$/.test(up) ? up + "\\" : up;      // "C:" 가 아니라 "C:\"
+  };
 
   async function refresh(dir) { await load(dir || root, true); await render(); }
   async function setRoot(p) { root = p; open.clear(); open.add(p); cache.clear(); sel = p; await render(); }
