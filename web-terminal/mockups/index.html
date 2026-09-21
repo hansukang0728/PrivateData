@@ -10,38 +10,33 @@
 <style>
 :root{
   --paper:#eceef2; --card:#ffffff; --ink:#161a22; --ink-2:#4a5263; --ink-3:#79839a;
-  --rule:#d5d9e2; --rule-2:#e6e9ef; --accent:#7AA2F7;
+  --rule:#d5d9e2; --accent:#7AA2F7;
   --shadow:0 1px 2px rgba(18,22,32,.06), 0 12px 32px -12px rgba(18,22,32,.22);
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
     --paper:#0e1015; --card:#171a21; --ink:#e7e9ee; --ink-2:#a9b0c0; --ink-3:#767f93;
-    --rule:#272b35; --rule-2:#1f232b;
-    --shadow:0 1px 2px rgba(0,0,0,.5), 0 18px 44px -16px rgba(0,0,0,.7);
+    --rule:#272b35; --shadow:0 1px 2px rgba(0,0,0,.5), 0 18px 44px -16px rgba(0,0,0,.7);
   }
 }
 :root[data-theme="dark"]{
   --paper:#0e1015; --card:#171a21; --ink:#e7e9ee; --ink-2:#a9b0c0; --ink-3:#767f93;
-  --rule:#272b35; --rule-2:#1f232b;
-  --shadow:0 1px 2px rgba(0,0,0,.5), 0 18px 44px -16px rgba(0,0,0,.7);
+  --rule:#272b35; --shadow:0 1px 2px rgba(0,0,0,.5), 0 18px 44px -16px rgba(0,0,0,.7);
 }
 *{box-sizing:border-box}
-body{
-  margin:0; background:var(--paper); color:var(--ink);
+body{margin:0; background:var(--paper); color:var(--ink);
   font-family:"IBM Plex Sans KR", system-ui, -apple-system, "Malgun Gothic", sans-serif;
-  font-size:14px; line-height:1.55; -webkit-font-smoothing:antialiased;
-}
-.wrap{max-width:1240px; margin:0 auto; padding-inline:16px; padding-block:28px 56px}
+  font-size:14px; line-height:1.55; -webkit-font-smoothing:antialiased}
+.wrap{max-width:1280px; margin:0 auto; padding-inline:16px; padding-block:28px 56px}
 .mono{font-family:"JetBrains Mono", ui-monospace, Consolas, monospace}
 
-/* ---------- page header ---------- */
-.head{display:flex; flex-wrap:wrap; gap:20px 32px; align-items:flex-end; justify-content:space-between; margin-bottom:20px}
+.head{display:flex; flex-wrap:wrap; gap:18px 32px; align-items:flex-end; justify-content:space-between; margin-bottom:18px}
 .head h1{margin:0; font-size:26px; font-weight:600; letter-spacing:-.01em; text-wrap:balance}
 .head h1 b{color:var(--accent); font-weight:600}
-.head p{margin:6px 0 0; color:var(--ink-2); max-width:62ch}
-.kbd{font-family:"JetBrains Mono",monospace; font-size:11px; border:1px solid var(--rule); border-bottom-width:2px; border-radius:5px; padding:1px 5px; color:var(--ink-2); background:var(--card)}
+.head p{margin:6px 0 0; color:var(--ink-2); max-width:66ch}
+.kbd{font-family:"JetBrains Mono",monospace; font-size:11px; border:1px solid var(--rule); border-bottom-width:2px;
+     border-radius:5px; padding:1px 5px; color:var(--ink-2); background:var(--card); white-space:nowrap}
 
-/* ---------- control bar ---------- */
 .bar{display:flex; flex-wrap:wrap; gap:14px 28px; align-items:center; padding:12px 14px; margin-bottom:14px;
      background:var(--card); border:1px solid var(--rule); border-radius:12px; box-shadow:var(--shadow)}
 .bar .grp{display:flex; align-items:center; gap:8px; min-width:0}
@@ -51,8 +46,7 @@ body{
       padding:5px 12px; border-radius:999px; cursor:pointer; transition:.12s}
 .chip:hover{border-color:var(--accent); color:var(--ink)}
 .chip[aria-pressed="true"]{background:var(--accent); border-color:var(--accent); color:#0b0e14; font-weight:500}
-.sw{width:30px; height:30px; border-radius:9px; border:1px solid var(--rule); cursor:pointer; padding:0;
-    position:relative; overflow:hidden; transition:.12s}
+.sw{width:30px; height:30px; border-radius:9px; border:1px solid var(--rule); cursor:pointer; padding:0; position:relative; overflow:hidden; transition:.12s}
 .sw:hover{transform:translateY(-1px)}
 .sw i{position:absolute; inset:0; display:block}
 .sw i::after{content:""; position:absolute; right:4px; bottom:4px; width:8px; height:8px; border-radius:50%; background:var(--d)}
@@ -60,28 +54,30 @@ body{
 .sw-name{font-size:12px; color:var(--ink-3); min-width:10ch}
 :focus-visible{outline:2px solid var(--accent); outline-offset:2px}
 
-/* ---------- app window ---------- */
+/* ---------------- app window ---------------- */
 .app{
   --bg:#1A1B26; --fg:#A9B1D6; --dim:#565f89; --chrome:#16161e; --panel:#1a1b26; --line:#2a2e42;
   --acc:#7AA2F7; --red:#F7768E; --green:#9ECE6A; --yellow:#E0AF68; --blue:#7AA2F7; --magenta:#BB9AF7; --cyan:#7DCFFF;
   border-radius:12px; overflow:hidden; border:1px solid var(--rule); box-shadow:var(--shadow);
-  background:var(--bg); color:var(--fg); display:flex; flex-direction:column; height:600px; min-height:420px;
-  font-size:13px;
+  background:var(--bg); color:var(--fg); display:flex; flex-direction:column; height:640px; min-height:440px; font-size:13px; position:relative;
 }
-.titlebar{display:flex; align-items:center; gap:10px; background:var(--chrome); border-bottom:1px solid var(--line);
-          padding:0 10px; height:34px; flex:0 0 auto; user-select:none}
-.dots{display:flex; gap:6px}
-.dots i{width:11px; height:11px; border-radius:50%; display:block}
-.title{font-size:12px; color:var(--dim); letter-spacing:.02em}
-.title b{color:var(--fg); font-weight:500}
+.titlebar{display:flex; align-items:center; gap:10px; background:var(--chrome); border-bottom:1px solid var(--line); padding:0 10px; height:34px; flex:0 0 auto; user-select:none}
+.dots{display:flex; gap:6px} .dots i{width:11px; height:11px; border-radius:50%; display:block}
+.title{font-size:12px; color:var(--dim)} .title b{color:var(--fg); font-weight:500}
 .winbtns{margin-left:auto; display:flex; gap:2px; color:var(--dim)}
 .winbtns span{width:30px; text-align:center; font-size:11px; line-height:22px; border-radius:4px}
+.body{flex:1; display:flex; min-height:0; position:relative}
 
-.body{flex:1; display:flex; min-height:0}
+.rail{width:44px; flex:0 0 44px; background:var(--chrome); border-right:1px solid var(--line); display:none;
+      flex-direction:column; align-items:center; padding-top:8px; gap:4px; color:var(--dim)}
+.rail b{width:32px; height:32px; display:grid; place-items:center; border-radius:7px; cursor:pointer; font-weight:400; font-size:15px}
+.rail b:hover{background:color-mix(in srgb, var(--acc) 15%, transparent); color:var(--fg)}
+.rail b.on{color:var(--acc); background:color-mix(in srgb, var(--acc) 15%, transparent)}
+.app[data-layout="term"] .rail{display:flex}
+.app[data-layout="term"] .exp{position:absolute; left:44px; top:0; bottom:0; z-index:6; box-shadow:12px 0 30px -12px rgba(0,0,0,.6)}
+.exp.hide{display:none}
 
-/* explorer */
-.exp{width:252px; flex:0 0 252px; background:var(--panel); border-right:1px solid var(--line);
-     display:flex; flex-direction:column; min-height:0}
+.exp{width:246px; flex:0 0 246px; background:var(--panel); border-right:1px solid var(--line); display:flex; flex-direction:column; min-height:0}
 .exp-head{display:flex; align-items:center; gap:6px; padding:8px 10px; border-bottom:1px solid var(--line);
           font-size:11px; letter-spacing:.09em; text-transform:uppercase; color:var(--dim)}
 .exp-head .act{margin-left:auto; display:flex; gap:2px}
@@ -95,64 +91,72 @@ body{
 .row .ic{width:14px; text-align:center; flex:0 0 14px}
 .row .nm{overflow:hidden; text-overflow:ellipsis}
 .row .nm input{font:inherit; background:var(--bg); color:var(--fg); border:1px solid var(--acc); border-radius:3px; padding:0 3px; width:150px}
-.f-dir{color:var(--yellow)} .f-py{color:var(--blue)} .f-json{color:var(--yellow)} .f-md{color:var(--cyan)} .f-html{color:var(--magenta)} .f-txt{color:var(--dim)}
+.f-dir{color:var(--yellow)} .f-py{color:var(--blue)} .f-json{color:var(--yellow)} .f-md{color:var(--cyan)}
+.f-html{color:var(--magenta)} .f-xlsx{color:var(--green)} .f-txt{color:var(--dim)}
 
-/* terminal area */
 .main{flex:1; display:flex; flex-direction:column; min-width:0; min-height:0}
 .tabbar{display:flex; align-items:stretch; background:var(--chrome); border-bottom:1px solid var(--line); min-height:34px; flex:0 0 auto}
-.tabs{display:flex; overflow-x:auto; scrollbar-width:none}
-.tabs::-webkit-scrollbar{display:none}
-.tab{display:flex; align-items:center; gap:7px; padding:0 8px 0 11px; border-right:1px solid var(--line);
-     color:var(--dim); cursor:pointer; white-space:nowrap; max-width:230px; font-size:12.5px; position:relative}
+.tabs{display:flex; overflow-x:auto; scrollbar-width:none} .tabs::-webkit-scrollbar{display:none}
+.tab{display:flex; align-items:center; gap:6px; padding:0 8px 0 10px; border-right:1px solid var(--line);
+     color:var(--dim); cursor:pointer; white-space:nowrap; max-width:210px; font-size:12.5px; position:relative}
 .tab:hover{background:color-mix(in srgb, var(--acc) 10%, transparent)}
 .tab.on{background:var(--bg); color:var(--fg)}
 .tab.on::after{content:""; position:absolute; left:0; right:0; top:0; height:2px; background:var(--acc)}
-.tab .t-ic{font-size:11px; color:var(--acc)}
+.tab.ingroup{background:color-mix(in srgb, var(--acc) 7%, transparent)}
+.tab.child{padding-left:4px}
+.tab.folded{opacity:.45}
+.tab .t-ic{font-size:10px; color:var(--acc)}
+.tab .t-ic.run{color:var(--green); animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.25}}
 .tab .t-nm{overflow:hidden; text-overflow:ellipsis}
-.tab .t-nm input{font:inherit; width:110px; background:var(--bg); color:var(--fg); border:1px solid var(--acc); border-radius:3px; padding:0 4px}
-.tab .x{opacity:.0; padding:0 3px; border-radius:4px; font-size:13px; line-height:1}
-.tab:hover .x,.tab.on .x{opacity:.65}
+.tab .t-nm input{font:inherit; width:100px; background:var(--bg); color:var(--fg); border:1px solid var(--acc); border-radius:3px; padding:0 4px}
+.tab .x{opacity:0; padding:0 3px; border-radius:4px; font-size:13px; line-height:1}
+.tab:hover .x,.tab.on .x{opacity:.6}
 .tab .x:hover{opacity:1; background:color-mix(in srgb, var(--red) 35%, transparent); color:#fff}
+.gsep{width:1px; background:var(--line); margin:6px 3px}
 .tabadd{padding:0 12px; color:var(--dim); cursor:pointer; display:flex; align-items:center; font-size:15px}
 .tabadd:hover{color:var(--fg)}
 .tabbar .right{margin-left:auto; display:flex; align-items:center; gap:2px; padding-right:8px; color:var(--dim); font-size:11px}
 .tabbar .right b{font-weight:400; padding:3px 7px; border-radius:5px; cursor:default}
 .tabbar .right b:hover{background:color-mix(in srgb, var(--acc) 15%, transparent); color:var(--fg)}
 
-.panes{flex:1; display:grid; grid-template-columns:1fr; min-height:0}
-.panes.split{grid-template-columns:1fr 1fr}
-.pane{min-width:0; min-height:0; display:flex; flex-direction:column; border-right:1px solid var(--line); position:relative}
-.pane:last-child{border-right:0}
-.pane-head{font-size:11px; color:var(--dim); padding:4px 10px; border-bottom:1px solid var(--line); display:flex; gap:8px}
+/* panes: parent left, children stacked right */
+.panes{flex:1; display:flex; min-height:0; min-width:0}
+.pane{display:flex; flex-direction:column; min-width:0; min-height:0; position:relative}
+.pane.parent{flex:0 0 auto; border-right:1px solid var(--line)}
+.kids{flex:1; display:flex; flex-direction:column; min-width:0; min-height:0}
+.kids .pane{flex:1; border-bottom:1px solid var(--line)}
+.kids .pane:last-child{border-bottom:0}
+.splitter{flex:0 0 5px; cursor:col-resize; background:transparent; position:relative}
+.splitter::after{content:""; position:absolute; inset:0 2px; background:var(--line)}
+.splitter:hover::after{background:var(--acc)}
+.pane-head{display:flex; align-items:center; gap:7px; font-size:11px; color:var(--dim); padding:4px 6px 4px 10px;
+           border-bottom:1px solid var(--line); background:color-mix(in srgb, var(--chrome) 55%, transparent); flex:0 0 auto}
 .pane.focus .pane-head{color:var(--acc)}
-.term{flex:1; overflow-y:auto; padding:8px 12px 14px; font-family:"JetBrains Mono", ui-monospace, Consolas, monospace;
+.pane.focus::before{content:""; position:absolute; inset:0; border:1px solid var(--acc); pointer-events:none; z-index:3; opacity:.55}
+.pane-head .ph-nm{font-weight:500; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.pane-head .ph-cwd{opacity:.6; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-family:"JetBrains Mono",monospace; font-size:10.5px}
+.pane-head .ph-act{margin-left:auto; display:flex; gap:2px; align-items:center}
+.pane-head .ph-act b{cursor:pointer; padding:1px 6px; border-radius:5px; font-weight:400; font-size:13px; line-height:1.3}
+.pane-head .ph-act b:hover{background:color-mix(in srgb, var(--acc) 26%, transparent); color:var(--fg)}
+.pane-head .ph-act b.add{color:var(--acc); border:1px solid color-mix(in srgb, var(--acc) 40%, transparent)}
+.badge{font-size:9.5px; letter-spacing:.06em; padding:0 5px; border-radius:4px; border:1px solid var(--line); color:var(--dim)}
+.badge.run{color:var(--green); border-color:color-mix(in srgb, var(--green) 45%, transparent)}
+.term{flex:1; overflow-y:auto; padding:8px 12px 12px; font-family:"JetBrains Mono", ui-monospace, Consolas, monospace;
       font-size:12.5px; line-height:1.55; white-space:pre-wrap; word-break:break-word; scrollbar-color:var(--line) transparent}
-.term::-webkit-scrollbar{width:11px} .term::-webkit-scrollbar-thumb{background:var(--line); border-radius:6px}
+.term::-webkit-scrollbar{width:10px} .term::-webkit-scrollbar-thumb{background:var(--line); border-radius:6px}
+.kids .term{font-size:12px}
 .ps{color:var(--green)} .path{color:var(--cyan)} .cmd{color:var(--fg)} .arrow{color:var(--dim)}
 .o-dim{color:var(--dim)} .o-red{color:var(--red)} .o-green{color:var(--green)} .o-yel{color:var(--yellow)}
 .o-blue{color:var(--blue)} .o-mag{color:var(--magenta)} .o-cyan{color:var(--cyan)} .o-head{color:var(--fg); font-weight:700}
 .caret{display:inline-block; width:7px; height:1.05em; background:var(--acc); vertical-align:-2px; animation:blink 1.05s steps(1) infinite}
 @keyframes blink{50%{opacity:0}}
 .ghost{position:absolute; opacity:0; pointer-events:none; width:1px; height:1px}
-.hint{position:absolute; right:14px; top:10px; font-size:11px; color:var(--dim); background:color-mix(in srgb, var(--chrome) 80%, transparent);
-      padding:3px 8px; border-radius:6px; border:1px solid var(--line)}
 .statusbar{flex:0 0 auto; display:flex; gap:16px; align-items:center; background:var(--chrome); border-top:1px solid var(--line);
            padding:3px 12px; font-size:11px; color:var(--dim)}
 .statusbar .sp{margin-left:auto}
 
-/* icon rail (layout B) */
-.rail{width:44px; flex:0 0 44px; background:var(--chrome); border-right:1px solid var(--line); display:none;
-      flex-direction:column; align-items:center; padding-top:8px; gap:4px; color:var(--dim)}
-.rail b{width:32px; height:32px; display:grid; place-items:center; border-radius:7px; cursor:pointer; font-weight:400; font-size:15px}
-.rail b:hover{background:color-mix(in srgb, var(--acc) 15%, transparent); color:var(--fg)}
-.rail b.on{color:var(--acc); background:color-mix(in srgb, var(--acc) 15%, transparent)}
-.app[data-layout="term"] .rail{display:flex}
-.app[data-layout="term"] .exp{position:absolute; left:44px; top:34px; bottom:0; z-index:5; box-shadow:12px 0 30px -12px rgba(0,0,0,.6)}
-.app[data-layout="term"] .exp.hide{display:none}
-.app[data-layout="term"] .body{position:relative}
-
-/* context menu */
-.menu{position:fixed; z-index:50; min-width:236px; background:var(--chrome); border:1px solid var(--line); border-radius:8px;
+.menu{position:fixed; z-index:60; min-width:238px; background:var(--chrome); border:1px solid var(--line); border-radius:8px;
       padding:5px; box-shadow:0 18px 46px -12px rgba(0,0,0,.66); font-size:13px; color:var(--fg)}
 .menu .mi{display:flex; align-items:center; gap:10px; padding:6px 9px; border-radius:5px; cursor:default; position:relative}
 .menu .mi:hover{background:color-mix(in srgb, var(--acc) 30%, transparent)}
@@ -163,28 +167,32 @@ body{
 .menu .sub{position:absolute; left:100%; top:-6px; margin-left:2px; display:none}
 .menu .mi:hover>.sub{display:block}
 .menu .mi.hot{color:var(--acc); font-weight:500}
+.menu .cap{padding:4px 9px 6px; font-size:10.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--dim)}
+.toast{position:fixed; right:20px; bottom:20px; z-index:99; font-family:"JetBrains Mono",monospace; font-size:11.5px;
+       color:var(--fg); background:var(--chrome); border:1px solid var(--line); padding:7px 12px; border-radius:8px;
+       box-shadow:0 12px 30px -10px rgba(0,0,0,.6); max-width:min(440px, 86vw)}
 
-/* ---------- notes ---------- */
-.notes{display:grid; grid-template-columns:repeat(auto-fit, minmax(270px,1fr)); gap:14px; margin-top:22px}
+.notes{display:grid; grid-template-columns:repeat(auto-fit, minmax(276px,1fr)); gap:14px; margin-top:22px}
 .note{background:var(--card); border:1px solid var(--rule); border-radius:12px; padding:14px 16px}
 .note.on{border-color:var(--accent); box-shadow:0 0 0 1px var(--accent) inset}
 .note h3{margin:0 0 2px; font-size:15px; font-weight:600}
 .note .tagline{font-size:11px; letter-spacing:.09em; text-transform:uppercase; color:var(--ink-3); margin-bottom:8px}
 .note p{margin:0 0 8px; color:var(--ink-2); font-size:13px}
 .note ul{margin:0; padding-left:17px; color:var(--ink-2); font-size:12.5px}
-.note li{margin-bottom:3px}
-.note li b{color:var(--ink); font-weight:500}
+.note li{margin-bottom:3px} .note li b{color:var(--ink); font-weight:500}
 .foot{margin-top:24px; padding-top:16px; border-top:1px solid var(--rule); color:var(--ink-3); font-size:12.5px}
 .foot b{color:var(--ink-2); font-weight:500}
-@media (max-width:820px){
+@media (max-width:900px){
   .app{height:auto}
   .body{flex-direction:column}
-  .exp{width:auto; flex:0 0 190px; border-right:0; border-bottom:1px solid var(--line)}
-  .panes.split{grid-template-columns:1fr; grid-template-rows:1fr 1fr}
-  .term{min-height:240px}
-  .app[data-layout="term"] .exp{position:static; display:flex}
+  .exp{width:auto; flex:0 0 180px; border-right:0; border-bottom:1px solid var(--line)}
+  .app[data-layout="term"] .exp{position:static}
+  .panes{flex-direction:column}
+  .pane.parent{flex:0 0 auto !important; width:auto !important; border-right:0; border-bottom:1px solid var(--line)}
+  .splitter{display:none}
+  .term{min-height:180px}
 }
-@media (prefers-reduced-motion: reduce){ *{animation:none !important; transition:none !important} }
+@media (prefers-reduced-motion: reduce){*{animation:none !important; transition:none !important}}
 </style>
 </head>
 <body>
@@ -192,22 +200,17 @@ body{
 
   <header class="head">
     <div>
-      <h1><b>PoshDeck</b> — 웹 터미널 목업</h1>
-      <p>Chrome에서 열리는 PowerShell 작업대. 아래 창은 <b>실제로 동작하는 목업</b>입니다 — 폴더를 <b>우클릭</b>하고, 탭 이름을 <b>더블클릭</b>해 바꾸고, 터미널에 <span class="kbd">Get-ChildItem</span> 을 쳐보세요.</p>
+      <h1><b>PoshDeck</b> — 터미널 그룹 목업</h1>
+      <p>부모 터미널 하나에 자식 여럿. <b>부모 페인 헤더의 ⊕</b> 를 눌러 하위 폴더를 고르면 자식이 오른쪽에 쌓입니다.
+         자식이 3개를 넘으면 오래된 자식이 탭으로 접히고, <b>실행 중인 자식(●)은 보호</b>됩니다.</p>
     </div>
-    <div class="head-meta mono" style="font-size:11px; color:var(--ink-3)">M0 · 레이아웃 3안 / 테마 8종</div>
+    <div class="mono" style="font-size:11px; color:var(--ink-3)">SPEC-groups.md 반영</div>
   </header>
 
   <div class="bar">
-    <div class="grp">
-      <span class="lbl">레이아웃</span>
-      <div class="chips" id="layouts"></div>
-    </div>
-    <div class="grp" style="flex:1">
-      <span class="lbl">테마</span>
-      <div class="chips" id="themes"></div>
-      <span class="sw-name" id="themeName"></span>
-    </div>
+    <div class="grp"><span class="lbl">레이아웃</span><div class="chips" id="layouts"></div></div>
+    <div class="grp"><span class="lbl">화면 자식 수</span><div class="chips" id="maxv"></div></div>
+    <div class="grp" style="flex:1"><span class="lbl">테마</span><div class="chips" id="themes"></div><span class="sw-name" id="themeName"></span></div>
   </div>
 
   <div class="app" id="app" data-layout="ide">
@@ -218,45 +221,36 @@ body{
     </div>
     <div class="body">
       <nav class="rail">
-        <b class="on" id="railExp" title="탐색기">&#9776;</b>
-        <b title="검색">&#8981;</b>
-        <b title="소스 제어">&#9906;</b>
+        <b class="on" id="railExp" title="탐색기">&#9776;</b><b title="검색">&#8981;</b><b title="소스 제어">&#9906;</b>
         <b title="설정" style="margin-top:auto; margin-bottom:8px">&#9881;</b>
       </nav>
       <aside class="exp" id="exp">
-        <div class="exp-head">
-          탐색기
-          <span class="act"><b title="새 폴더">&#43;</b><b title="새로 고침">&#8635;</b><b title="모두 접기">&#8863;</b></span>
-        </div>
+        <div class="exp-head">탐색기<span class="act"><b title="새 폴더">&#43;</b><b title="새로 고침">&#8635;</b><b title="모두 접기">&#8863;</b></span></div>
         <div class="tree" id="tree"></div>
       </aside>
       <section class="main">
         <div class="tabbar">
           <div class="tabs" id="tabs"></div>
-          <div class="tabadd" id="tabadd" title="새 탭 (Ctrl+Shift+T)">&#43;</div>
-          <div class="right">
-            <b id="btnSplit" title="분할">&#9707; 분할</b><b title="검색 Ctrl+F">&#8981; 검색</b><b title="설정">&#9881;</b>
-          </div>
+          <div class="tabadd" id="tabadd" title="새 그룹 (Ctrl+Shift+T)">&#43;</div>
+          <div class="right"><b id="btnFolded" title="접힌 자식">&#8863; 접힘 <span id="foldN">0</span></b><b title="검색 Ctrl+F">&#8981; 검색</b><b title="설정">&#9881;</b></div>
         </div>
         <div class="panes" id="panes"></div>
       </section>
     </div>
     <div class="statusbar">
-      <span id="stPath">C:\Users\hansu\HansuKangDailyData</span>
-      <span id="stShell">PowerShell 7.4.6</span>
-      <span class="sp" id="stScroll">스크롤백 10,000줄</span>
-      <span id="stTheme">Tokyo Night</span>
+      <span id="stPath">—</span><span id="stShell">—</span>
+      <span class="sp" id="stGroup">—</span><span id="stScroll">—</span><span id="stTheme">—</span>
     </div>
     <input class="ghost" id="ghost" autocomplete="off" aria-label="터미널 입력">
   </div>
 
   <div class="notes" id="notes"></div>
-
-  <p class="foot"><b>다음 단계 —</b> 세 레이아웃 중 하나를 고르면 M1(로컬 Node 에이전트 + node-pty로 PowerShell 세션 연결)부터 실제 코드로 착수합니다. 목업의 탐색기·탭·테마 구조는 그대로 xterm.js 위로 옮겨갑니다. 상세 설계는 <span class="mono">web-terminal/PLAN.md</span>.</p>
+  <p class="foot"><b>다음 단계 —</b> M1: 로컬 Node 에이전트 + node-pty로 진짜 PowerShell 세션을 이 구조에 연결.
+     규칙 전문은 <span class="mono">web-terminal/SPEC-groups.md</span>, 전체 설계는 <span class="mono">web-terminal/PLAN.md</span>.</p>
 </div>
 
 <script>
-// ---------------------------------------------------------------- themes
+// ============================================================ themes
 const THEMES = {
   tokyonight:{n:"Tokyo Night", bg:"#1A1B26",fg:"#A9B1D6",dim:"#565F89",chrome:"#16161E",panel:"#1A1B26",line:"#2A2E42",acc:"#7AA2F7",red:"#F7768E",green:"#9ECE6A",yellow:"#E0AF68",blue:"#7AA2F7",magenta:"#BB9AF7",cyan:"#7DCFFF"},
   campbell:{n:"Campbell (PowerShell 기본)", bg:"#0C0C0C",fg:"#CCCCCC",dim:"#767676",chrome:"#1A1A1A",panel:"#101010",line:"#2E2E2E",acc:"#3A96DD",red:"#E74856",green:"#16C60C",yellow:"#F9F1A5",blue:"#3B78FF",magenta:"#B4009E",cyan:"#61D6D6"},
@@ -268,15 +262,10 @@ const THEMES = {
   solarized:{n:"Solarized Light", bg:"#FDF6E3",fg:"#586E75",dim:"#93A1A1",chrome:"#EEE8D5",panel:"#F5EFDC",line:"#DDD6C1",acc:"#268BD2",red:"#DC322F",green:"#859900",yellow:"#B58900",blue:"#268BD2",magenta:"#D33682",cyan:"#2AA198"}
 };
 
-// ---------------------------------------------------------------- file tree (실제 레포 구조)
+// ============================================================ file tree
 const ROOT = "C:\\Users\\hansu\\HansuKangDailyData";
 const TREE = [
-  {n:".claude", d:1, open:false, c:[
-    {n:"skills", d:1, open:true, c:[
-      {n:"crawl-naver-land", d:1, c:[{n:"SKILL.md"}]},
-      {n:"molit-apt-trade", d:1, c:[{n:"SKILL.md"}]}
-    ]}
-  ]},
+  {n:".claude", d:1, c:[{n:"skills", d:1, c:[{n:"crawl-naver-land", d:1, c:[{n:"SKILL.md"}]},{n:"molit-apt-trade", d:1, c:[{n:"SKILL.md"}]}]}]},
   {n:"data", d:1, open:true, c:[
     {n:"2025-09-18", d:1, c:[{n:"naver_raw.json"},{n:"molit_raw.json"}]},
     {n:"2025-09-19", d:1, c:[{n:"naver_raw.json"},{n:"molit_raw.json"}]},
@@ -287,136 +276,7 @@ const TREE = [
   {n:"build_dashboard.py"},{n:"crawl_complex.py"},{n:"molit_trade.py"},{n:"watchlist.py"},
   {n:"watchlist.json"},{n:"requirements.txt"},{n:"README.md"}
 ];
-
-// ---------------------------------------------------------------- state
-let TAB_SEQ = 0;
-const state = {
-  layout:"ide", theme:"tokyonight", expHidden:false, split:false,
-  sel:"data", tabs:[], active:null, second:null, focusPane:0, buf:""
-};
-
-function seedHistory(){
-  return [
-    {h:'<span class="o-dim">Windows PowerShell 7.4.6</span>'},
-    {h:'<span class="o-dim">(c) Microsoft Corporation. All rights reserved.</span>'},
-    {h:""},
-    {p:ROOT, cmd:"python crawl_complex.py --watchlist watchlist.json"},
-    {h:'<span class="o-cyan">[10:02:11]</span> 관심단지 12곳 로드 (watchlist.json)'},
-    {h:'<span class="o-cyan">[10:02:12]</span> Chromium 실행 · headless=True'},
-    {h:'<span class="o-dim">  → 헬리오시티        매매  74건 / 전세  31건</span>'},
-    {h:'<span class="o-dim">  → 파크리오          매매  52건 / 전세  22건</span>'},
-    {h:'<span class="o-dim">  → 리센츠            매매  61건 / 전세  28건</span>'},
-    {h:'<span class="o-dim">  → 잠실엘스          매매  58건 / 전세  25건</span>'},
-    {h:'<span class="o-dim">  → 트리지움          매매  33건 / 전세  14건</span>'},
-    {h:'<span class="o-yel">  ! 레이크팰리스      응답 지연 3.2s — 재시도 1/3</span>'},
-    {h:'<span class="o-dim">  → 레이크팰리스      매매  19건 / 전세   8건</span>'},
-    {h:'<span class="o-cyan">[10:04:47]</span> 수집 완료 · 총 <span class="o-head">420</span>건'},
-    {h:'<span class="o-green">✔</span> data\\2025-09-20\\naver_raw.json 저장 (1.8 MB)'},
-    {h:'<span class="o-green">✔</span> output\\관심단지_시세_20250920.xlsx 저장'},
-    {h:""},
-    {p:ROOT, cmd:"python molit_trade.py --month 202509"},
-    {h:'<span class="o-cyan">[10:05:03]</span> 국토부 실거래가 API · 서비스키 확인됨'},
-    {h:'<span class="o-dim">  11710 송파구  202509 …  186건</span>'},
-    {h:'<span class="o-dim">  11680 강남구  202509 …  142건</span>'},
-    {h:'<span class="o-dim">  11650 서초구  202509 …   97건</span>'},
-    {h:'<span class="o-red">  x 11440 마포구  HTTP 500 — 5초 후 재시도</span>'},
-    {h:'<span class="o-dim">  11440 마포구  202509 …  118건</span>'},
-    {h:'<span class="o-green">✔</span> 실거래 543건 → output\\실거래_202509.xlsx'},
-    {h:""},
-    {p:ROOT, cmd:"git status --short"},
-    {h:'<span class="o-green">M </span> data/2025-09-20/naver_raw.json'},
-    {h:'<span class="o-red">?? </span>output/관심단지_시세_20250920.xlsx'},
-    {h:""},
-    {p:ROOT, cmd:"Get-ChildItem output | Sort-Object LastWriteTime -Descending | Select-Object -First 3"},
-    {h:""},
-    {h:'<span class="o-head">    디렉터리: '+ROOT+'\\output</span>'},
-    {h:""},
-    {h:'<span class="o-head">Mode           LastWriteTime      Length Name</span>'},
-    {h:'<span class="o-head">----           -------------      ------ ----</span>'},
-    {h:"-a---    2025-09-20  10:05       48213 실거래_202509.xlsx"},
-    {h:"-a---    2025-09-20  10:04      126984 관심단지_시세_20250920.xlsx"},
-    {h:"-a---    2025-09-19  09:58      125311 관심단지_시세_20250919.xlsx"},
-    {h:""}
-  ];
-}
-
-function newTab(name, cwd, shell, lines){
-  const t = {id:++TAB_SEQ, name, cwd:cwd||ROOT, shell:shell||"pwsh", lines:lines||[{h:'<span class="o-dim">PowerShell 7.4.6 — 새 세션</span>'},{h:""}], buf:"", scrollBottom:true};
-  state.tabs.push(t); return t;
-}
-newTab("데일리 수집 — pwsh", ROOT, "pwsh", seedHistory());
-newTab("data — pwsh", ROOT+"\\data", "pwsh");
-newTab("git", ROOT, "pwsh", [{h:'<span class="o-dim">PowerShell 7.4.6 — 새 세션</span>'},{h:""},{p:ROOT, cmd:"git log --oneline -3"},{h:'<span class="o-yel">c785752</span> 국토교통부 아파트 매매 실거래가 조회 스킬 추가'},{h:'<span class="o-yel">ad66b62</span> 크롤러: 사전 설치 chromium을 executable_path로 지정'},{h:'<span class="o-yel">b3d973a</span> SKILL.md: 데일리 push를 native git push로 단순화'},{h:""}]);
-state.active = state.tabs[0].id; state.second = state.tabs[1].id;
-
-// ---------------------------------------------------------------- theme + layout
-const $ = s => document.querySelector(s);
-const app = $("#app");
-
-function applyTheme(k){
-  state.theme = k; const t = THEMES[k];
-  for (const [p,v] of Object.entries({bg:t.bg,fg:t.fg,dim:t.dim,chrome:t.chrome,panel:t.panel,line:t.line,acc:t.acc,red:t.red,green:t.green,yellow:t.yellow,blue:t.blue,magenta:t.magenta,cyan:t.cyan}))
-    app.style.setProperty("--"+p, v);
-  document.documentElement.style.setProperty("--accent", t.acc);
-  $("#themeName").textContent = t.n;
-  $("#stTheme").textContent = t.n;
-  document.querySelectorAll("#themes .sw").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.k===k)));
-}
-$("#themes").innerHTML = Object.entries(THEMES).map(([k,t]) =>
-  `<button class="sw" data-k="${k}" title="${t.n}" aria-pressed="false" style="--d:${t.acc}"><i style="background:linear-gradient(135deg, ${t.bg} 0 58%, ${t.chrome} 58% 100%)"></i></button>`).join("");
-$("#themes").addEventListener("click", e => { const b = e.target.closest(".sw"); if (b) applyTheme(b.dataset.k); });
-
-const LAYOUTS = [
-  {k:"ide", n:"A · IDE형", head:"VS Code 계열", d:"탐색기가 항상 왼쪽에 붙어 있고 터미널은 오른쪽 전체를 쓴다. 파일을 보면서 명령을 치는 시간이 길 때 가장 편하다.",
-   pros:["탐색기 ↔ 터미널 왕복이 클릭 0회","폴더 우클릭 → 여기서 터미널 열기가 가장 자연스러움","현재 프로젝트 작업 방식(파이썬 스크립트 실행)과 잘 맞음"],
-   cons:["터미널 가로폭이 252px 줄어듦 — 긴 로그 줄바꿈"]},
-  {k:"term", n:"B · 터미널 우선형", head:"Windows Terminal 계열", d:"탐색기를 아이콘 레일로 접어두고 터미널이 창 전체를 차지한다. 레일의 ☰ 를 누르면 탐색기가 위에 겹쳐 열린다.",
-   pros:["터미널 가로폭 최대 — 넓은 표(Format-Table) 출력에 유리","탭 바가 창 전체 폭이라 탭을 많이 띄워도 안 줄어듦","키보드 위주 작업에 적합"],
-   cons:["탐색기를 볼 때마다 한 번 더 누름","탐색기가 터미널을 가림"]},
-  {k:"split", n:"C · 분할형", head:"두 세션 동시", d:"오른쪽을 두 페인으로 갈라 서로 다른 세션을 나란히 본다. 크롤러를 돌려놓고 옆에서 결과 파일을 확인하는 식.",
-   pros:["장시간 실행(크롤링) + 확인 작업 동시 진행","페인마다 다른 폴더/셸 지정 가능","탭은 그대로 두고 보기만 나눔"],
-   cons:["1920px 미만에서는 페인당 폭이 좁음","포커스가 어느 페인인지 늘 표시해야 함"]}
-];
-$("#layouts").innerHTML = LAYOUTS.map(l => `<button class="chip" data-k="${l.k}" aria-pressed="false">${l.n}</button>`).join("");
-$("#layouts").addEventListener("click", e => { const b = e.target.closest(".chip"); if (b) applyLayout(b.dataset.k); });
-
-function applyLayout(k){
-  state.layout = k; app.dataset.layout = k;
-  state.split = (k === "split");
-  state.expHidden = (k === "term");
-  document.querySelectorAll("#layouts .chip").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.k===k)));
-  document.querySelectorAll("#notes .note").forEach(n => n.classList.toggle("on", n.dataset.k===k));
-  $("#exp").classList.toggle("hide", state.expHidden && k==="term");
-  render();
-}
-$("#notes").innerHTML = LAYOUTS.map(l => `<article class="note" data-k="${l.k}">
-  <div class="tagline">${l.head}</div><h3>${l.n.replace(/^. · /,"")}</h3><p>${l.d}</p>
-  <ul>${l.pros.map(p=>`<li><b>+</b> ${p}</li>`).join("")}${l.cons.map(c=>`<li>− ${c}</li>`).join("")}</ul></article>`).join("");
-$("#notes").addEventListener("click", e => { const n = e.target.closest(".note"); if (n) applyLayout(n.dataset.k); });
-$("#railExp").addEventListener("click", () => { state.expHidden = !state.expHidden; $("#exp").classList.toggle("hide", state.expHidden); });
-$("#btnSplit").addEventListener("click", () => applyLayout(state.layout==="split" ? "ide" : "split"));
-
-// ---------------------------------------------------------------- explorer
-const ICON = {dir:"&#128193;", py:"&#9679;", json:"&#9679;", md:"&#9679;", html:"&#9679;", xlsx:"&#9679;", txt:"&#9679;"};
-function ext(n){ const m = /\.([a-z]+)$/i.exec(n); return m ? m[1].toLowerCase() : "txt"; }
-function pathOf(node, parent){ return (parent||ROOT) + "\\" + node.n; }
-
-function renderTree(){
-  const out = [];
-  (function walk(nodes, depth, parent){
-    for (const nd of nodes){
-      const p = pathOf(nd, parent), isDir = !!nd.d, e = isDir ? "dir" : ext(nd.n);
-      out.push(`<div class="row ${state.sel===p?"sel":""}" data-p="${p}" data-dir="${isDir?1:0}" data-name="${nd.n}" style="padding-left:${6+depth*13}px">
-        <span class="tw">${isDir ? (nd.open ? "&#9660;" : "&#9654;") : ""}</span>
-        <span class="ic f-${e}">${isDir ? (nd.open ? "&#128194;" : "&#128193;") : "&#128196;"}</span>
-        <span class="nm f-${e}">${nd.n}</span></div>`);
-      if (isDir && nd.open && nd.c) walk(nd.c, depth+1, p);
-    }
-  })(TREE, 0, ROOT);
-  $("#tree").innerHTML =
-    `<div class="row" data-p="${ROOT}" data-dir="1" data-name="HansuKangDailyData" style="padding-left:6px">
-       <span class="tw">&#9660;</span><span class="ic f-dir">&#128194;</span><span class="nm">HansuKangDailyData</span></div>` + out.join("");
-}
+function pathOf(nd, parent){ return (parent||ROOT) + "\\" + nd.n; }
 function findNode(path, nodes, parent){
   nodes = nodes || TREE; parent = parent || ROOT;
   for (const nd of nodes){
@@ -426,51 +286,254 @@ function findNode(path, nodes, parent){
   }
   return null;
 }
+function childrenOf(path){
+  if (path === ROOT) return TREE;
+  const nd = findNode(path);
+  return (nd && nd.d) ? (nd.c || []) : [];
+}
+function subFolders(path){ return childrenOf(path).filter(n => n.d); }
+function leaf(p){ return p.split("\\").pop(); }
+
+// ============================================================ state
+const SHELL_LABEL = {pwsh:"PowerShell 7.4.6", powershell:"Windows PowerShell 5.1", cmd:"cmd.exe", wsl:"Ubuntu 24.04"};
+let SEQ = 0, CLOCK = 0;
+const S = { layout:"ide", theme:"tokyonight", maxVisible:3, expHidden:false,
+            groups:[], terms:{}, activeGroup:null, focusedTerm:null, sel:ROOT+"\\data" };
+
+function mkTerm(o){
+  const id = ++SEQ;
+  S.terms[id] = {id, groupId:o.groupId, role:o.role, name:o.name, cwd:o.cwd, birthCwd:o.cwd,
+                 shell:o.shell||"pwsh", lines:o.lines||[], buf:"", running:!!o.running, lastInputAt:++CLOCK};
+  return S.terms[id];
+}
+function mkGroup(o){
+  const g = {id:"g"+(++SEQ), parentId:null, children:[], visible:[], ratio:o.ratio||0.6};
+  S.groups.push(g);
+  const p = mkTerm({groupId:g.id, role:"parent", name:o.name, cwd:o.cwd, shell:o.shell, lines:o.lines});
+  g.parentId = p.id;
+  return g;
+}
+function groupOf(id){ return S.groups.find(g => g.id === S.terms[id].groupId); }
+function groupTerms(g){ return [g.parentId, ...g.children]; }
+
+function addChild(g, cwd, shell){
+  const t = mkTerm({groupId:g.id, role:"child", name:leaf(cwd), cwd, shell:shell||"pwsh",
+    lines:[{h:`<span class="o-dim">${SHELL_LABEL[shell||"pwsh"]} — 새 세션</span>`},
+           {h:`<span class="o-dim">작업 폴더: ${esc(cwd)}</span>`},{h:""}]});
+  g.children.push(t.id); g.visible.push(t.id);
+  enforceVisible(g);
+  S.activeGroup = g.id; S.focusedTerm = t.id;
+  render(); focusTerm();
+  return t;
+}
+// 화면 자식 수 한도 — 가장 오래 안 쓴 자식을 접는다. 실행 중인 자식은 끝까지 보호.
+function enforceVisible(g){
+  while (g.visible.length > S.maxVisible){
+    const cands = g.visible.slice(0, -1);               // 방금 만든/올린 자식은 제외
+    cands.sort((a,b) => {
+      const A = S.terms[a], B = S.terms[b];
+      if (A.running !== B.running) return A.running ? 1 : -1;   // 실행 중은 뒤로 = 보호
+      return A.lastInputAt - B.lastInputAt;                     // 오래된 것부터
+    });
+    const ev = cands[0];
+    g.visible = g.visible.filter(x => x !== ev);
+    toast(`${S.terms[ev].name} — 자리를 양보해 탭으로 접혔습니다 (세션은 살아 있음)`);
+  }
+}
+function unfold(id){
+  const g = groupOf(id);
+  if (!g.visible.includes(id)) g.visible.push(id);
+  enforceVisible(g);
+  S.activeGroup = g.id; S.focusedTerm = id;
+}
+function closeTerm(id){
+  const g = groupOf(id), t = S.terms[id];
+  if (t.role === "parent"){
+    const running = groupTerms(g).filter(x => S.terms[x].running);
+    const msg = running.length
+      ? `이 그룹을 닫으면 자식 ${g.children.length}개도 함께 닫힙니다.\n\n실행 중: ${running.map(x=>S.terms[x].name).join(", ")}\n\n닫을까요?`
+      : `이 그룹을 닫으면 자식 ${g.children.length}개도 함께 닫힙니다. 닫을까요?`;
+    if (g.children.length && !confirm(msg)) return;
+    if (S.groups.length === 1) return toast("마지막 그룹은 닫을 수 없습니다");
+    groupTerms(g).forEach(x => delete S.terms[x]);
+    S.groups = S.groups.filter(x => x !== g);
+    S.activeGroup = S.groups[0].id; S.focusedTerm = S.groups[0].parentId;
+  } else {
+    g.children = g.children.filter(x => x !== id);
+    g.visible  = g.visible.filter(x => x !== id);
+    delete S.terms[id];
+    const folded = g.children.filter(x => !g.visible.includes(x));    // 접혀 있던 자식이 올라온다
+    if (folded.length) g.visible.push(folded.sort((a,b)=>S.terms[b].lastInputAt-S.terms[a].lastInputAt)[0]);
+    S.focusedTerm = g.parentId;
+  }
+  render();
+}
+function promote(id){      // 자식을 독립 그룹의 부모로 승격
+  const g = groupOf(id), t = S.terms[id];
+  g.children = g.children.filter(x => x !== id);
+  g.visible  = g.visible.filter(x => x !== id);
+  const ng = {id:"g"+(++SEQ), parentId:id, children:[], visible:[], ratio:0.6};
+  S.groups.push(ng);
+  t.groupId = ng.id; t.role = "parent";
+  S.activeGroup = ng.id; S.focusedTerm = id;
+  toast(`${t.name} — 독립 그룹으로 승격`);
+  render();
+}
+
+// ============================================================ seed
+function seedParentLog(){
+  return [
+    {h:'<span class="o-dim">PowerShell 7.4.6 — (c) Microsoft Corporation.</span>'},{h:""},
+    {p:ROOT, cmd:"python crawl_complex.py --watchlist watchlist.json"},
+    {h:'<span class="o-cyan">[10:02:11]</span> 관심단지 12곳 로드 (watchlist.json)'},
+    {h:'<span class="o-dim">  → 헬리오시티        매매  74건 / 전세  31건</span>'},
+    {h:'<span class="o-dim">  → 파크리오          매매  52건 / 전세  22건</span>'},
+    {h:'<span class="o-dim">  → 리센츠            매매  61건 / 전세  28건</span>'},
+    {h:'<span class="o-dim">  → 잠실엘스          매매  58건 / 전세  25건</span>'},
+    {h:'<span class="o-yel">  ! 레이크팰리스      응답 지연 3.2s — 재시도 1/3</span>'},
+    {h:'<span class="o-dim">  → 레이크팰리스      매매  19건 / 전세   8건</span>'},
+    {h:'<span class="o-cyan">[10:04:47]</span> 수집 완료 · 총 <span class="o-head">420</span>건'},
+    {h:'<span class="o-green">✔</span> data\\2025-09-20\\naver_raw.json 저장 (1.8 MB)'},{h:""},
+    {p:ROOT, cmd:"git status --short"},
+    {h:'<span class="o-green">M </span> data/2025-09-20/naver_raw.json'},
+    {h:'<span class="o-red">?? </span>output/관심단지_시세_20250920.xlsx'},{h:""},
+    {p:ROOT, cmd:"Get-ChildItem | Select-Object -First 4"},{h:""},
+    {h:'<span class="o-head">Mode           LastWriteTime      Length Name</span>'},
+    {h:'<span class="o-head">----           -------------      ------ ----</span>'},
+    {h:'d----    2025-09-20  10:04             <span class="o-yel">data</span>'},
+    {h:'d----    2025-09-19  09:58             <span class="o-yel">docs</span>'},
+    {h:'d----    2025-09-20  10:05             <span class="o-yel">output</span>'},
+    {h:'-a---    2025-09-18  22:10       19301 <span class="o-cyan">crawl_complex.py</span>'},{h:""}
+  ];
+}
+(function seed(){
+  const g = mkGroup({name:"HansuKangDailyData", cwd:ROOT, lines:seedParentLog()});
+  const c1 = mkTerm({groupId:g.id, role:"child", name:"data", cwd:ROOT+"\\data", running:true, lines:[
+    {h:'<span class="o-dim">PowerShell 7.4.6 — 새 세션</span>'},{h:""},
+    {p:ROOT+"\\data", cmd:"python ..\\molit_trade.py --month 202509 --watch"},
+    {h:'<span class="o-cyan">[10:05:03]</span> 국토부 실거래가 API · 서비스키 확인됨'},
+    {h:'<span class="o-dim">  11710 송파구  202509 …  186건</span>'},
+    {h:'<span class="o-dim">  11680 강남구  202509 …  142건</span>'},
+    {h:'<span class="o-yel">  … 11650 서초구 수집 중</span>'}]});
+  const c2 = mkTerm({groupId:g.id, role:"child", name:"output", cwd:ROOT+"\\output", lines:[
+    {h:'<span class="o-dim">PowerShell 7.4.6 — 새 세션</span>'},{h:""},
+    {p:ROOT+"\\output", cmd:"Get-ChildItem *.xlsx"},
+    {h:'<span class="o-green">실거래_20250919.xlsx</span>'},
+    {h:'<span class="o-green">관심단지_시세_20250919.xlsx</span>'},{h:""}]});
+  const c3 = mkTerm({groupId:g.id, role:"child", name:"docs", cwd:ROOT+"\\docs", lines:[
+    {h:'<span class="o-dim">PowerShell 7.4.6 — 새 세션</span>'},{h:""},
+    {p:ROOT+"\\docs", cmd:"python -m http.server 8000"},
+    {h:'<span class="o-dim">Serving HTTP on :: port 8000 …</span>'},{h:""}]});
+  g.children = [c1.id, c2.id, c3.id];
+  g.visible  = [c1.id, c2.id, c3.id];
+  mkGroup({name:"git", cwd:ROOT, lines:[
+    {h:'<span class="o-dim">PowerShell 7.4.6 — 새 세션</span>'},{h:""},
+    {p:ROOT, cmd:"git log --oneline -3"},
+    {h:'<span class="o-yel">7c3d36b</span> 터미널 그룹(부모-자식) 사양 확정'},
+    {h:'<span class="o-yel">594c19f</span> 첫 커밋: 웹 기반 터미널 계획서 + 목업'},{h:""}]});
+  S.activeGroup = g.id; S.focusedTerm = g.parentId;
+})();
+
+// ============================================================ chrome controls
+const $ = s => document.querySelector(s);
+const app = $("#app");
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+function applyTheme(k){
+  S.theme = k; const t = THEMES[k];
+  ["bg","fg","dim","chrome","panel","line","acc","red","green","yellow","blue","magenta","cyan"]
+    .forEach(p => app.style.setProperty("--"+p, t[p]));
+  document.documentElement.style.setProperty("--accent", t.acc);
+  $("#themeName").textContent = t.n; $("#stTheme").textContent = t.n;
+  document.querySelectorAll("#themes .sw").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.k===k)));
+}
+$("#themes").innerHTML = Object.entries(THEMES).map(([k,t]) =>
+  `<button class="sw" data-k="${k}" title="${t.n}" aria-pressed="false" style="--d:${t.acc}"><i style="background:linear-gradient(135deg, ${t.bg} 0 58%, ${t.chrome} 58% 100%)"></i></button>`).join("");
+$("#themes").addEventListener("click", e => { const b = e.target.closest(".sw"); if (b) applyTheme(b.dataset.k); });
+
+const LAYOUTS = [
+  {k:"ide", n:"A · IDE형", head:"VS Code 계열", d:"탐색기가 항상 왼쪽에 붙어 있습니다. 폴더를 보며 자식 터미널을 뿌리는 지금 작업 방식과 잘 맞습니다.",
+   li:["<b>+</b> 탐색기 → 자식 생성이 클릭 한 번","<b>+</b> 폴더 구조와 터미널 족보를 나란히 대조","− 터미널 가로폭 246px 손해"]},
+  {k:"term", n:"B · 터미널 우선형", head:"Windows Terminal 계열", d:"탐색기를 아이콘 레일로 접습니다. 레일의 ☰ 로 잠깐 펼쳐 쓰고 다시 닫습니다.",
+   li:["<b>+</b> 부모 + 자식 3개가 넉넉하게 들어감","<b>+</b> 넓은 표 출력에 유리","− 자식 만들 때 탐색기를 한 번 펼쳐야 함"]}
+];
+$("#layouts").innerHTML = LAYOUTS.map(l => `<button class="chip" data-k="${l.k}" aria-pressed="false">${l.n}</button>`).join("");
+$("#layouts").addEventListener("click", e => { const b = e.target.closest(".chip"); if (b) applyLayout(b.dataset.k); });
+function applyLayout(k){
+  S.layout = k; app.dataset.layout = k;
+  S.expHidden = (k === "term");
+  $("#exp").classList.toggle("hide", S.expHidden);
+  document.querySelectorAll("#layouts .chip").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.k===k)));
+  document.querySelectorAll("#notes .note[data-k]").forEach(n => n.classList.toggle("on", n.dataset.k===k));
+}
+$("#maxv").innerHTML = [2,3,4].map(n => `<button class="chip" data-n="${n}" aria-pressed="false">${n}개</button>`).join("");
+$("#maxv").addEventListener("click", e => {
+  const b = e.target.closest(".chip"); if (!b) return;
+  S.maxVisible = Number(b.dataset.n);
+  S.groups.forEach(enforceVisible);
+  document.querySelectorAll("#maxv .chip").forEach(x => x.setAttribute("aria-pressed", String(Number(x.dataset.n)===S.maxVisible)));
+  render();
+});
+$("#railExp").addEventListener("click", () => { S.expHidden = !S.expHidden; $("#exp").classList.toggle("hide", S.expHidden); });
+$("#notes").innerHTML = LAYOUTS.map(l => `<article class="note" data-k="${l.k}">
+  <div class="tagline">${l.head}</div><h3>${l.n.replace(/^. · /,"")}</h3><p>${l.d}</p>
+  <ul>${l.li.map(x=>`<li>${x}</li>`).join("")}</ul></article>`).join("") + `
+  <article class="note"><div class="tagline">확정된 규칙</div><h3>그룹 · 족보</h3>
+  <p>분할은 곧 "자식 만들기"입니다. 손자는 없고, 깊이는 2단계에서 멈춥니다.</p>
+  <ul><li><b>⊕ 는 부모 페인에만</b> — 자식은 자식을 못 낳습니다</li>
+      <li>자식 탭 클릭 = <b>포커스만</b> 이동, 화면은 그대로</li>
+      <li>자식이 어디로 cd 하든 <b>족보 유지</b></li>
+      <li>한도 넘으면 오래된 자식을 접고 <b>실행 중(●)은 보호</b></li>
+      <li>부모를 닫으면 그룹 전체가 닫힙니다</li>
+      <li>탭 우클릭 → 독립 그룹으로 <b>승격</b></li></ul></article>`;
+$("#notes").addEventListener("click", e => { const n = e.target.closest(".note[data-k]"); if (n) applyLayout(n.dataset.k); });
+
+// ============================================================ explorer
+function renderTree(){
+  const out = [];
+  (function walk(nodes, depth, parent){
+    for (const nd of nodes){
+      const p = pathOf(nd, parent), isDir = !!nd.d;
+      const e = isDir ? "dir" : (/\.([a-z]+)$/i.exec(nd.n) ? RegExp.$1.toLowerCase() : "txt");
+      out.push(`<div class="row ${S.sel===p?"sel":""}" data-p="${p}" data-dir="${isDir?1:0}" data-name="${nd.n}" style="padding-left:${6+depth*13}px">
+        <span class="tw">${isDir ? (nd.open ? "&#9660;" : "&#9654;") : ""}</span>
+        <span class="ic f-${e}">${isDir ? (nd.open ? "&#128194;" : "&#128193;") : "&#128196;"}</span>
+        <span class="nm f-${e}">${nd.n}</span></div>`);
+      if (isDir && nd.open && nd.c) walk(nd.c, depth+1, p);
+    }
+  })(TREE, 0, ROOT);
+  $("#tree").innerHTML = `<div class="row ${S.sel===ROOT?"sel":""}" data-p="${ROOT}" data-dir="1" data-name="HansuKangDailyData" style="padding-left:6px">
+      <span class="tw">&#9660;</span><span class="ic f-dir">&#128194;</span><span class="nm">HansuKangDailyData</span></div>` + out.join("");
+}
 $("#tree").addEventListener("click", e => {
   const r = e.target.closest(".row"); if (!r) return;
-  state.sel = r.dataset.p; $("#stPath").textContent = r.dataset.p;
-  const nd = findNode(r.dataset.p);
-  if (nd && nd.d) nd.open = !nd.open;
+  S.sel = r.dataset.p;
+  const nd = findNode(r.dataset.p); if (nd && nd.d) nd.open = !nd.open;
   renderTree();
 });
 $("#tree").addEventListener("contextmenu", e => {
   const r = e.target.closest(".row"); if (!r) return;
-  e.preventDefault();
-  state.sel = r.dataset.p; renderTree();
-  openMenu(e.clientX, e.clientY, r.dataset.p, r.dataset.name, r.dataset.dir==="1");
+  e.preventDefault(); S.sel = r.dataset.p; renderTree();
+  explorerMenu(e.clientX, e.clientY, r.dataset.p, r.dataset.name, r.dataset.dir==="1");
 });
 
-// ---------------------------------------------------------------- context menu (Windows 탐색기 동작 + 터미널 열기)
+// ============================================================ menus
 let menuEl = null;
 function closeMenu(){ if (menuEl){ menuEl.remove(); menuEl = null; } }
 document.addEventListener("click", closeMenu);
 document.addEventListener("keydown", e => { if (e.key === "Escape") closeMenu(); });
 
-function openMenu(x, y, path, name, isDir){
+function showMenu(x, y, items){
   closeMenu();
-  const shells = [["PowerShell 7","pwsh"],["Windows PowerShell 5.1","powershell"],["명령 프롬프트","cmd"],["Ubuntu (WSL)","wsl"]];
-  const items = [
-    isDir ? {i:"&#128194;", t:"열기", k:"Enter", act:()=>{ const nd=findNode(path); if(nd){nd.open=true; renderTree();} }}
-          : {i:"&#128196;", t:"열기", k:"Enter", act:()=>toast(`${name} — 기본 앱으로 열기`)},
-    {i:"&#128290;", t:"여기서 터미널 열기", hot:true, sub:shells.map(([label,sh]) => ({t:label, act:()=>openTerminalAt(isDir?path:path.replace(/\\[^\\]+$/,""), sh)}))},
-    {sep:1},
-    {i:"&#10010;", t:"새로 만들기", sub:[{t:"폴더", act:()=>toast("새 폴더")},{t:"텍스트 문서", act:()=>toast("새 텍스트 문서")},{t:"PowerShell 스크립트 (.ps1)", act:()=>toast("새 .ps1")}]},
-    {sep:1},
-    {i:"&#9986;", t:"잘라내기", k:"Ctrl+X", act:()=>toast("잘라내기")},
-    {i:"&#128203;", t:"복사", k:"Ctrl+C", act:()=>toast("복사")},
-    {i:"&#128204;", t:"붙여넣기", k:"Ctrl+V", dis:!isDir},
-    {sep:1},
-    {i:"&#9998;", t:"이름 바꾸기", k:"F2", act:()=>renameInTree(path)},
-    {i:"&#128465;", t:"삭제", k:"Del", act:()=>toast(`${name} — 휴지통으로 이동`)},
-    {sep:1},
-    {i:"&#128203;", t:"경로 복사", k:"Ctrl+Shift+C", act:()=>toast(path)},
-    {i:"&#128449;", t:"Windows 탐색기에서 표시", act:()=>toast("explorer /select,"+name)},
-    {sep:1},
-    {i:"&#8505;", t:"속성", k:"Alt+Enter", act:()=>toast(`${name} 속성`)}
-  ];
   menuEl = document.createElement("div");
   menuEl.className = "menu";
-  menuEl.innerHTML = items.map(renderItem).join("");
+  menuEl.innerHTML = items.map((it, i) => {
+    if (it.sep) return '<div class="sep"></div>';
+    if (it.cap) return `<div class="cap">${it.cap}</div>`;
+    const sub = it.sub ? `<div class="menu sub">${it.sub.map((s,j)=>`<div class="mi" data-idx="${i}:${j}"><span class="ic"></span>${s.t}</div>`).join("")}</div>` : "";
+    return `<div class="mi ${it.dis?"dis":""} ${it.hot?"hot":""}" ${it.sub?"":`data-idx="${i}:-1"`}>
+      <span class="ic">${it.i||""}</span>${it.t}<span class="k">${it.sub?"&#9654;":(it.k||"")}</span>${sub}</div>`;
+  }).join("");
   document.body.appendChild(menuEl);
   const r = menuEl.getBoundingClientRect();
   menuEl.style.left = Math.min(x, innerWidth - r.width - 8) + "px";
@@ -482,14 +545,60 @@ function openMenu(x, y, path, name, isDir){
     const it = b >= 0 ? items[a].sub[b] : items[a];
     closeMenu(); if (it.act) it.act();
   });
-
-  function renderItem(it, idx){
-    if (it.sep) return '<div class="sep"></div>';
-    const sub = it.sub ? `<div class="menu sub">${it.sub.map((s,j)=>`<div class="mi" data-idx="${idx}:${j}"><span class="ic"></span>${s.t}</div>`).join("")}</div>` : "";
-    return `<div class="mi ${it.dis?"dis":""} ${it.hot?"hot":""}" ${it.sub?"":`data-idx="${idx}:-1"`}>
-      <span class="ic">${it.i||""}</span>${it.t}<span class="k">${it.sub?"&#9654;":(it.k||"")}</span>${sub}</div>`;
-  }
 }
+function explorerMenu(x, y, path, name, isDir){
+  const g = S.groups.find(g => g.id === S.activeGroup);
+  const parent = S.terms[g.parentId];
+  const dirPath = isDir ? path : path.replace(/\\[^\\]+$/, "");
+  showMenu(x, y, [
+    {i:"&#128194;", t:"열기", k:"Enter", act:()=>{ const nd=findNode(path); if(nd&&nd.d){nd.open=true; renderTree();} else toast(name+" — 기본 앱으로 열기"); }},
+    {sep:1},
+    {i:"&#8627;", t:`자식 터미널로 열기 — ${parent.name} 밑`, hot:true, act:()=>addChild(g, dirPath)},
+    {i:"&#9633;", t:"새 그룹으로 열기", sub:[["PowerShell 7","pwsh"],["Windows PowerShell 5.1","powershell"],["명령 프롬프트","cmd"],["Ubuntu (WSL)","wsl"]]
+      .map(([label,sh]) => ({t:label, act:()=>newGroup(dirPath, sh)}))},
+    {sep:1},
+    {i:"&#10010;", t:"새로 만들기", sub:[{t:"폴더", act:()=>toast("새 폴더")},{t:"텍스트 문서", act:()=>toast("새 텍스트 문서")},{t:"PowerShell 스크립트 (.ps1)", act:()=>toast("새 .ps1")}]},
+    {i:"&#9986;", t:"잘라내기", k:"Ctrl+X", act:()=>toast("잘라내기")},
+    {i:"&#128203;", t:"복사", k:"Ctrl+C", act:()=>toast("복사")},
+    {i:"&#128204;", t:"붙여넣기", k:"Ctrl+V", dis:!isDir},
+    {sep:1},
+    {i:"&#9998;", t:"이름 바꾸기", k:"F2", act:()=>renameInTree(path)},
+    {i:"&#128465;", t:"삭제", k:"Del", act:()=>toast(name+" — 휴지통으로 이동")},
+    {sep:1},
+    {i:"&#128203;", t:"경로 복사", k:"Ctrl+Shift+C", act:()=>toast(path)},
+    {i:"&#128449;", t:"Windows 탐색기에서 표시", act:()=>toast("explorer /select,"+name)},
+    {i:"&#8505;", t:"속성", k:"Alt+Enter", act:()=>toast(name+" 속성")}
+  ]);
+}
+function tabMenu(x, y, id){
+  const t = S.terms[id], g = groupOf(id);
+  const items = [
+    {i:"&#9998;", t:"이름 바꾸기", k:"F2", act:()=>renameTab(id)},
+    {i:"&#128279;", t:`태어난 곳: ${leaf(t.birthCwd)}`, dis:true}
+  ];
+  if (t.role === "child"){
+    items.push({sep:1},
+      {i:"&#8599;", t:"독립 그룹으로 승격", hot:true, act:()=>promote(id)},
+      {i: g.visible.includes(id) ? "&#8863;" : "&#8862;", t: g.visible.includes(id) ? "화면에서 접기" : "화면에 펼치기",
+        act:()=>{ if (g.visible.includes(id)) g.visible = g.visible.filter(x=>x!==id); else unfold(id); render(); }});
+  } else {
+    items.push({sep:1}, {i:"&#8627;", t:"자식 터미널 추가", hot:true, act:()=>pickFolder(id, x, y)});
+  }
+  items.push({sep:1}, {i:"&#10005;", t: t.role==="parent" ? "그룹 닫기" : "닫기", k:"Ctrl+W", act:()=>closeTerm(id)});
+  showMenu(x, y, items);
+}
+// ⊕ — 부모의 현재 폴더 기준 하위 폴더 목록
+function pickFolder(parentId, x, y){
+  const p = S.terms[parentId], g = groupOf(parentId);
+  const subs = subFolders(p.cwd);
+  const items = [{cap:`${leaf(p.cwd)} 아래에서 고르기`},
+    {i:"&#128194;", t:`현재 폴더 그대로 (${leaf(p.cwd)})`, hot:true, act:()=>addChild(g, p.cwd)}];
+  if (subs.length) items.push({sep:1});
+  subs.forEach(nd => items.push({i:"&#128193;", t:nd.n, act:()=>addChild(g, p.cwd+"\\"+nd.n)}));
+  items.push({sep:1}, {i:"&#8230;", t:"다른 폴더 찾아보기…", act:()=>toast("폴더 선택 대화상자")});
+  showMenu(x, y, items);
+}
+
 function renameInTree(path){
   const row = document.querySelector(`.row[data-p="${CSS.escape(path)}"]`); if (!row) return;
   const nm = row.querySelector(".nm"), old = nm.textContent;
@@ -499,47 +608,60 @@ function renameInTree(path){
   inp.addEventListener("keydown", e => { e.stopPropagation(); if (e.key==="Enter") done(true); if (e.key==="Escape") done(false); });
   inp.addEventListener("blur", () => done(true));
 }
-function openTerminalAt(path, shell){
-  const label = {pwsh:"pwsh", powershell:"PS 5.1", cmd:"cmd", wsl:"wsl"}[shell];
-  const leaf = path.split("\\").pop();
-  const t = newTab(`${leaf} — ${label}`, path, shell, [
-    {h:`<span class="o-dim">${shell==="cmd"?"Microsoft Windows [Version 10.0.22631.4317]":shell==="wsl"?"Ubuntu 24.04 LTS":"PowerShell 7.4.6"}</span>`},
-    {h:`<span class="o-dim">작업 폴더: ${path}</span>`}, {h:""}
-  ]);
-  state.active = t.id; render(); focusTerm();
+function newGroup(cwd, shell){
+  const g = mkGroup({name:leaf(cwd), cwd, shell, lines:[
+    {h:`<span class="o-dim">${SHELL_LABEL[shell||"pwsh"]} — 새 세션</span>`},
+    {h:`<span class="o-dim">작업 폴더: ${esc(cwd)}</span>`},{h:""}]});
+  S.activeGroup = g.id; S.focusedTerm = g.parentId;
+  render(); focusTerm();
 }
+$("#tabadd").addEventListener("click", () => newGroup(S.sel, "pwsh"));
+$("#btnFolded").addEventListener("click", e => {
+  const g = S.groups.find(g => g.id === S.activeGroup);
+  const folded = g.children.filter(x => !g.visible.includes(x));
+  if (!folded.length) return toast("접힌 자식이 없습니다");
+  const r = e.target.getBoundingClientRect();
+  showMenu(r.left, r.bottom + 4, [{cap:"접힌 자식 — 누르면 화면으로 복귀"},
+    ...folded.map(id => ({i:"&#8862;", t:S.terms[id].name + (S.terms[id].running?" ●":""), act:()=>{ unfold(id); render(); }}))]);
+});
 
-// ---------------------------------------------------------------- tabs
+// ============================================================ tabs
 function renderTabs(){
-  $("#tabs").innerHTML = state.tabs.map(t => `
-    <div class="tab ${t.id===state.active?"on":""}" data-id="${t.id}" title="${t.cwd}">
-      <span class="t-ic">&#9632;</span><span class="t-nm">${esc(t.name)}</span><span class="x" data-x="${t.id}">&times;</span>
-    </div>`).join("");
+  const html = [];
+  S.groups.forEach((g, gi) => {
+    if (gi) html.push('<div class="gsep"></div>');
+    const ids = [g.parentId, ...g.children];
+    ids.forEach(id => {
+      const t = S.terms[id], isChild = t.role === "child";
+      const folded = isChild && !g.visible.includes(id);
+      const on = S.focusedTerm === id;
+      html.push(`<div class="tab ${on?"on":""} ${g.id===S.activeGroup?"ingroup":""} ${isChild?"child":""} ${folded?"folded":""}"
+        data-id="${id}" title="${esc(t.cwd)}${folded?" — 접힘":""}">
+        <span class="t-ic ${t.running?"run":""}">${isChild?"&#9492;":"&#9632;"}</span>
+        <span class="t-nm">${esc(t.name)}</span>${folded?'<span class="t-ic">&#8964;</span>':""}
+        <span class="x" data-x="${id}">&times;</span></div>`);
+    });
+  });
+  $("#tabs").innerHTML = html.join("");
+  const g = S.groups.find(g => g.id === S.activeGroup);
+  $("#foldN").textContent = g ? g.children.filter(x => !g.visible.includes(x)).length : 0;
 }
 $("#tabs").addEventListener("click", e => {
-  const x = e.target.closest(".x");
-  if (x){ closeTab(Number(x.dataset.x)); return; }
+  const x = e.target.closest(".x"); if (x){ closeTerm(Number(x.dataset.x)); return; }
   const tab = e.target.closest(".tab"); if (!tab) return;
-  state.active = Number(tab.dataset.id); render(); focusTerm();
+  const id = Number(tab.dataset.id), g = groupOf(id), t = S.terms[id];
+  if (t.role === "child" && !g.visible.includes(id)) unfold(id);     // 접힌 자식 → 자리 교대
+  else { S.activeGroup = g.id; S.focusedTerm = id; }                  // 그 외 → 포커스만 이동
+  render(); focusTerm();
 });
-$("#tabs").addEventListener("dblclick", e => {
+$("#tabs").addEventListener("dblclick", e => { const tab = e.target.closest(".tab"); if (tab) renameTab(Number(tab.dataset.id)); });
+$("#tabs").addEventListener("contextmenu", e => {
   const tab = e.target.closest(".tab"); if (!tab) return;
-  renameTab(Number(tab.dataset.id));
+  e.preventDefault(); tabMenu(e.clientX, e.clientY, Number(tab.dataset.id));
 });
-$("#tabadd").addEventListener("click", () => {
-  const t = newTab(`pwsh ${state.tabs.length+1}`, state.sel, "pwsh");
-  state.active = t.id; render(); focusTerm();
-});
-function closeTab(id){
-  const i = state.tabs.findIndex(t => t.id===id); if (i<0 || state.tabs.length===1) return;
-  state.tabs.splice(i,1);
-  if (state.active===id) state.active = state.tabs[Math.max(0,i-1)].id;
-  if (state.second===id) state.second = state.tabs.find(t=>t.id!==state.active)?.id ?? state.active;
-  render();
-}
 function renameTab(id){
   const tab = document.querySelector(`.tab[data-id="${id}"]`); if (!tab) return;
-  const t = state.tabs.find(t=>t.id===id), nm = tab.querySelector(".t-nm");
+  const t = S.terms[id], nm = tab.querySelector(".t-nm");
   nm.innerHTML = `<input value="${esc(t.name)}">`;
   const inp = nm.querySelector("input"); inp.focus(); inp.select();
   const done = ok => { if (ok && inp.value.trim()) t.name = inp.value.trim(); render(); };
@@ -548,155 +670,164 @@ function renameTab(id){
   inp.addEventListener("click", e => e.stopPropagation());
 }
 
-// ---------------------------------------------------------------- terminal panes
-function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+// ============================================================ panes
 function lineHTML(l){
   if (l.p !== undefined) return `<span class="ps">PS</span> <span class="path">${esc(l.p)}</span><span class="arrow">&gt;</span> <span class="cmd">${esc(l.cmd)}</span>`;
   return l.h;
 }
-function promptHTML(t, live){
-  return `<span class="ps">PS</span> <span class="path">${esc(t.cwd)}</span><span class="arrow">&gt;</span> <span class="cmd">${esc(t.buf)}</span>${live?'<span class="caret"></span>':""}`;
+function paneHTML(t, isParent){
+  const live = S.focusedTerm === t.id;
+  const prompt = `<span class="ps">PS</span> <span class="path">${esc(t.cwd)}</span><span class="arrow">&gt;</span> <span class="cmd">${esc(t.buf)}</span>${live?'<span class="caret"></span>':""}`;
+  const moved = t.cwd !== t.birthCwd && !isParent;
+  return `<div class="pane ${isParent?"parent":"kid"} ${live?"focus":""}" data-id="${t.id}" ${isParent?`style="flex:0 0 ${Math.round(S.groups.find(g=>g.id===S.activeGroup).ratio*100)}%"`:""}>
+    <div class="pane-head">
+      <span class="ph-nm">${isParent?"":"&#9492; "}${esc(t.name)}</span>
+      <span class="ph-cwd">${esc(t.cwd)}</span>
+      ${t.running?'<span class="badge run">● 실행 중</span>':""}
+      ${moved?`<span class="badge" title="태어난 곳: ${esc(t.birthCwd)}">&#10548; 이동함</span>`:""}
+      <span class="ph-act">
+        ${isParent?'<b class="add" data-add="'+t.id+'" title="자식 터미널 추가 (Ctrl+Shift+D)">&#43;</b>':""}
+        <b data-close="${t.id}" title="${isParent?"그룹 닫기":"닫기"}">&times;</b>
+      </span>
+    </div>
+    <div class="term" data-term="${t.id}">${t.lines.map(lineHTML).join("\n")}${t.lines.length?"\n":""}${prompt}</div>
+  </div>`;
 }
 function renderPanes(){
-  const panes = $("#panes");
-  panes.classList.toggle("split", state.split);
-  const ids = state.split ? [state.active, state.second ?? state.active] : [state.active];
-  panes.innerHTML = ids.map((id, i) => {
-    const t = state.tabs.find(t=>t.id===id) || state.tabs[0];
-    const live = (i === state.focusPane) || !state.split;
-    return `<div class="pane ${live?"focus":""}" data-i="${i}" data-id="${t.id}">
-      ${state.split ? `<div class="pane-head">${esc(t.name)} <span style="opacity:.6">${esc(t.cwd)}</span></div>` : ""}
-      <div class="term" data-term="${t.id}">${t.lines.map(lineHTML).join("\n")}\n${promptHTML(t, live)}</div>
-      ${i===0 && !state.split ? '<div class="hint">클릭 후 입력 — <b>Get-ChildItem</b>, <b>cd data</b>, <b>cls</b>, <b>help</b></div>' : ""}
-    </div>`;
-  }).join("");
-  panes.querySelectorAll(".term").forEach(el => { el.scrollTop = el.scrollHeight; });
-  panes.querySelectorAll(".pane").forEach(p => p.addEventListener("mousedown", () => {
-    state.focusPane = Number(p.dataset.i);
-    if (state.split) state.active = state.focusPane===0 ? Number(p.dataset.id) : state.active;
-    focusTerm();
-    document.querySelectorAll(".pane").forEach(q => q.classList.toggle("focus", q===p));
-  }));
-  const t = state.tabs.find(t=>t.id===state.active);
-  if (t){ $("#stPath").textContent = t.cwd; $("#stShell").textContent = {pwsh:"PowerShell 7.4.6", powershell:"Windows PowerShell 5.1", cmd:"cmd.exe", wsl:"Ubuntu 24.04"}[t.shell]; }
-  $("#stScroll").textContent = `스크롤백 ${(t? t.lines.length:0).toLocaleString()} / 10,000줄`;
+  const g = S.groups.find(g => g.id === S.activeGroup);
+  const parent = S.terms[g.parentId];
+  const kids = g.visible.map(id => S.terms[id]).filter(Boolean);
+  $("#panes").innerHTML = paneHTML(parent, true)
+    + (kids.length ? `<div class="splitter" id="splitter"></div><div class="kids">${kids.map(t => paneHTML(t,false)).join("")}</div>` : "");
+  $("#panes").querySelectorAll(".term").forEach(el => { el.scrollTop = el.scrollHeight; });
+  const f = S.terms[S.focusedTerm] || parent;
+  $("#stPath").textContent = f.cwd;
+  $("#stShell").textContent = SHELL_LABEL[f.shell];
+  $("#stGroup").textContent = `그룹: ${parent.name} · 자식 ${g.children.length} (화면 ${g.visible.length}/${S.maxVisible})`;
+  $("#stScroll").textContent = `스크롤백 ${f.lines.length.toLocaleString()} / 10,000줄`;
 }
+$("#panes").addEventListener("mousedown", e => {
+  const add = e.target.closest("[data-add]");
+  if (add){ e.stopPropagation(); const r = add.getBoundingClientRect(); pickFolder(Number(add.dataset.add), r.left - 40, r.bottom + 4); return; }
+  const cl = e.target.closest("[data-close]");
+  if (cl){ e.stopPropagation(); closeTerm(Number(cl.dataset.close)); return; }
+  const pane = e.target.closest(".pane");
+  if (pane){ S.focusedTerm = Number(pane.dataset.id); S.terms[S.focusedTerm].lastInputAt = ++CLOCK; render(); focusTerm(); }
+});
+// splitter drag
+$("#panes").addEventListener("mousedown", e => {
+  if (!e.target.closest("#splitter")) return;
+  e.preventDefault();
+  const g = S.groups.find(g => g.id === S.activeGroup);
+  const box = $("#panes").getBoundingClientRect();
+  const move = ev => { g.ratio = Math.min(0.82, Math.max(0.25, (ev.clientX - box.left) / box.width)); renderPanes(); };
+  const up = () => { removeEventListener("mousemove", move); removeEventListener("mouseup", up); };
+  addEventListener("mousemove", move); addEventListener("mouseup", up);
+});
 function focusTerm(){ $("#ghost").focus({preventScroll:true}); }
-$("#panes").addEventListener("click", focusTerm);
 
+// ============================================================ fake shell
 const ghost = $("#ghost");
 ghost.addEventListener("keydown", e => {
-  const t = state.tabs.find(t=>t.id===state.active); if (!t) return;
-  if (e.key === "Enter"){ runCmd(t, t.buf); t.buf = ""; }
+  const t = S.terms[S.focusedTerm]; if (!t) return;
+  if (e.ctrlKey && e.shiftKey && (e.key === "D" || e.key === "d")){
+    e.preventDefault();
+    const g = groupOf(t.id);
+    const anchor = document.querySelector(`.pane[data-id="${g.parentId}"] .ph-act .add`);
+    const r = anchor ? anchor.getBoundingClientRect() : {left:innerWidth/2, bottom:200};
+    return pickFolder(g.parentId, r.left - 40, r.bottom + 4);
+  }
+  if (e.key === "Enter"){ runCmd(t, t.buf); t.buf = ""; t.lastInputAt = ++CLOCK; }
   else if (e.key === "Backspace"){ t.buf = t.buf.slice(0,-1); }
-  else if (e.key === "Tab"){ e.preventDefault(); t.buf += "  "; }
   else if (e.key.length === 1 && !e.ctrlKey && !e.metaKey){ t.buf += e.key; }
   else return;
-  e.preventDefault(); renderPanes();
+  e.preventDefault(); render();
 });
-
-function lsOf(cwd){
-  let nodes = TREE;
-  if (cwd !== ROOT){
-    const nd = findNode(cwd);
-    if (!nd || !nd.d) return null;
-    nodes = nd.c || [];
-  }
-  return nodes;
+function err(t, msg){
+  t.lines.push({h:`<span class="o-red">${esc(msg)}</span>`},
+    {h:'<span class="o-red">이름이 정확한지 확인하고 경로가 올바른지 검증한 다음 다시 시도하십시오.</span>'},{h:""});
 }
 function runCmd(t, raw){
   const cmd = raw.trim();
   t.lines.push({p:t.cwd, cmd:raw});
   const [verb, ...rest] = cmd.split(/\s+/);
   const v = (verb||"").toLowerCase(), arg = rest.join(" ");
-  if (!cmd){ /* 빈 줄 */ }
-  else if (["cls","clear"].includes(v)){ t.lines = []; }
+  if (!cmd){}
+  else if (["cls","clear"].includes(v)) t.lines = [];
   else if (["get-childitem","ls","dir","gci"].includes(v)){
-    const nodes = lsOf(t.cwd);
-    if (!nodes){ err(t, `'${t.cwd}' 경로를 찾을 수 없습니다.`); }
-    else {
-      t.lines.push({h:""}, {h:`<span class="o-head">    디렉터리: ${esc(t.cwd)}</span>`}, {h:""},
-        {h:'<span class="o-head">Mode           LastWriteTime      Length Name</span>'},
-        {h:'<span class="o-head">----           -------------      ------ ----</span>'});
-      for (const nd of nodes){
-        const dir = !!nd.d;
-        const size = dir ? "" : String(1200 + nd.n.length*617);
-        t.lines.push({h:`${dir?"d----":"-a---"}    2025-09-20  10:0${(nd.n.length%6)}    ${size.padStart(8)} <span class="${dir?"o-yel":"o-cyan"}">${esc(nd.n)}</span>`});
-      }
-      t.lines.push({h:""});
-    }
+    const nodes = childrenOf(t.cwd);
+    t.lines.push({h:""}, {h:`<span class="o-head">    디렉터리: ${esc(t.cwd)}</span>`}, {h:""},
+      {h:'<span class="o-head">Mode           LastWriteTime      Length Name</span>'},
+      {h:'<span class="o-head">----           -------------      ------ ----</span>'});
+    nodes.forEach(nd => {
+      const dir = !!nd.d, size = dir ? "" : String(1200 + nd.n.length*617);
+      t.lines.push({h:`${dir?"d----":"-a---"}    2025-09-20  10:0${nd.n.length%6}    ${size.padStart(8)} <span class="${dir?"o-yel":"o-cyan"}">${esc(nd.n)}</span>`});
+    });
+    t.lines.push({h:""});
   }
   else if (["cd","set-location","sl"].includes(v)){
-    if (!arg || arg === "\\"){ t.cwd = ROOT; }
-    else if (arg === ".."){ t.cwd = t.cwd === ROOT ? ROOT : t.cwd.replace(/\\[^\\]+$/, ""); }
+    if (!arg || arg === "\\") t.cwd = ROOT;
+    else if (arg === "..") t.cwd = t.cwd === ROOT ? ROOT : t.cwd.replace(/\\[^\\]+$/, "");
     else {
       const target = arg.startsWith("C:") ? arg : t.cwd + "\\" + arg.replace(/^\.\\/, "");
       const nd = findNode(target);
-      if (nd && nd.d){ t.cwd = target; const sel = findNode(target); if (sel) sel.open = true; state.sel = target; renderTree(); }
-      else err(t, `'${arg}' 경로가 없기 때문에 찾을 수 없습니다.`);
+      if (nd && nd.d){ t.cwd = target; nd.open = true; S.sel = target; }
+      else if (/^[A-Z]:\\/i.test(arg)){ t.cwd = arg; toast(`${t.name} — 그룹 밖 폴더로 이동. 족보는 그대로 유지됩니다`); }
+      else return err(t, `'${arg}' 경로가 없기 때문에 찾을 수 없습니다.`);
     }
   }
-  else if (["pwd","get-location","gl"].includes(v)){
-    t.lines.push({h:""},{h:'<span class="o-head">Path</span>'},{h:'<span class="o-head">----</span>'},{h:esc(t.cwd)},{h:""});
-  }
+  else if (["pwd","get-location","gl"].includes(v)) t.lines.push({h:""},{h:'<span class="o-head">Path</span>'},{h:'<span class="o-head">----</span>'},{h:esc(t.cwd)},{h:""});
   else if (v === "help" || v === "?"){
-    t.lines.push({h:'<span class="o-head">목업에서 동작하는 명령</span>'},
-      {h:'  <span class="o-cyan">Get-ChildItem</span> (ls, dir)   현재 폴더 목록'},
-      {h:'  <span class="o-cyan">cd</span> &lt;폴더&gt; / cd ..        폴더 이동 — 좌측 트리도 함께 움직입니다'},
-      {h:'  <span class="o-cyan">pwd</span>                      현재 경로'},
-      {h:'  <span class="o-cyan">cls</span>                      화면 지우기'},
-      {h:'  <span class="o-cyan">python crawl_complex.py</span>  크롤러 실행(시뮬레이션)'},
-      {h:'  <span class="o-cyan">git status</span> / <span class="o-cyan">git log</span>      저장소 상태'},
-      {h:'  <span class="o-cyan">Get-Date</span>                 현재 시각'},{h:""},
-      {h:'<span class="o-dim">실제 구현에서는 node-pty가 띄운 진짜 PowerShell이 연결됩니다.</span>'},{h:""});
+    t.lines.push({h:'<span class="o-head">목업에서 동작하는 것</span>'},
+      {h:'  <span class="o-cyan">Get-ChildItem</span> (ls, dir)  현재 폴더 목록'},
+      {h:'  <span class="o-cyan">cd</span> &lt;폴더&gt; / cd ..       폴더 이동 — 자식이 멀리 가도 족보는 유지'},
+      {h:'  <span class="o-cyan">cd C:\\Windows</span>           그룹 밖으로 이동해 보기'},
+      {h:'  <span class="o-cyan">python crawl_complex.py</span> 크롤러 실행 → 실행 중(●) 상태가 되어 접기에서 보호됨'},
+      {h:'  <span class="o-cyan">stop</span>                     실행 중 상태 해제'},
+      {h:'  <span class="o-cyan">cls</span> / <span class="o-cyan">pwd</span> / <span class="o-cyan">git log</span>'},{h:""},
+      {h:'<span class="o-dim">Ctrl+Shift+D — 부모에서 자식 만들기 (자식 페인에서 눌러도 부모 기준)</span>'},{h:""});
   }
   else if (v === "python" || v === "py"){
     if (/crawl_complex/.test(arg)){
+      t.running = true;
       t.lines.push({h:'<span class="o-cyan">[10:22:04]</span> 관심단지 12곳 로드 (watchlist.json)'},
         {h:'<span class="o-dim">  → 헬리오시티        매매  74건 / 전세  31건</span>'},
-        {h:'<span class="o-dim">  → 파크리오          매매  52건 / 전세  22건</span>'},
-        {h:'<span class="o-green">✔</span> data\\2025-09-20\\naver_raw.json 저장 (1.8 MB)'},{h:""});
+        {h:'<span class="o-yel">  … 수집 진행 중 (백그라운드)</span>'});
+      toast(`${t.name} — 실행 중(●). 이제 접기 대상에서 보호됩니다`);
     } else if (/molit_trade/.test(arg)){
-      t.lines.push({h:'<span class="o-cyan">[10:22:31]</span> 국토부 실거래가 API 호출 · 4개 구'},
-        {h:'<span class="o-green">✔</span> 실거래 543건 → output\\실거래_202509.xlsx'},{h:""});
-    } else if (/build_dashboard/.test(arg)){
-      t.lines.push({h:'<span class="o-green">✔</span> docs\\dashboard_2025-09-20.html 생성'},{h:""});
-    } else if (!arg){
-      t.lines.push({h:'<span class="o-dim">Python 3.12.4 (tags/v3.12.4) on win32</span>'},{h:'<span class="o-dim">Type "help" for more information.</span>'},{h:'&gt;&gt;&gt; <span class="o-dim">(exit() 로 종료)</span>'},{h:""});
+      t.running = true;
+      t.lines.push({h:'<span class="o-cyan">[10:22:31]</span> 국토부 실거래가 API 호출 · 4개 구'},{h:'<span class="o-yel">  … 수집 진행 중</span>'});
     } else err(t, `python: can't open file '${arg}'`);
   }
+  else if (v === "stop"){ t.running = false; t.lines.push({h:'<span class="o-dim">작업을 중지했습니다.</span>'},{h:""}); }
   else if (v === "git"){
-    if (/^log/.test(arg)) t.lines.push({h:'<span class="o-yel">c785752</span> 국토교통부 아파트 매매 실거래가 조회 스킬 추가'},{h:'<span class="o-yel">ad66b62</span> 크롤러: 사전 설치 chromium을 executable_path로 지정'},{h:""});
-    else if (/^status/.test(arg)) t.lines.push({h:'On branch <span class="o-green">claude/web-based-terminal-app-hnaymb</span>'},{h:'<span class="o-red">  modified:   data/2025-09-20/naver_raw.json</span>'},{h:""});
-    else t.lines.push({h:'<span class="o-dim">usage: git [--version] [--help] &lt;command&gt;</span>'},{h:""});
+    if (/^log/.test(arg)) t.lines.push({h:'<span class="o-yel">7c3d36b</span> 터미널 그룹(부모-자식) 사양 확정'},{h:'<span class="o-yel">594c19f</span> 첫 커밋: 웹 기반 터미널 계획서 + 목업'},{h:""});
+    else t.lines.push({h:'On branch <span class="o-green">main</span>'},{h:""});
   }
-  else if (["get-date","date"].includes(v)){
-    t.lines.push({h:""},{h:new Date().toLocaleString("ko-KR",{weekday:"long",year:"numeric",month:"long",day:"numeric",hour:"2-digit",minute:"2-digit",second:"2-digit"})},{h:""});
-  }
-  else if (v === "echo" || v === "write-host"){ t.lines.push({h:esc(arg)},{h:""}); }
-  else if (v === "exit"){ t.lines.push({h:'<span class="o-dim">세션을 닫으려면 탭의 × 를 누르세요.</span>'},{h:""}); }
+  else if (["get-date","date"].includes(v)) t.lines.push({h:""},{h:new Date().toLocaleString("ko-KR")},{h:""});
+  else if (v === "echo") t.lines.push({h:esc(arg)},{h:""});
   else err(t, `${verb} : 용어 '${verb}'이(가) cmdlet, 함수, 스크립트 파일 또는 실행할 수 있는 프로그램 이름으로 인식되지 않습니다.`);
   if (t.lines.length > 10000) t.lines = t.lines.slice(-10000);
 }
-function err(t, msg){
-  t.lines.push({h:`<span class="o-red">${esc(msg)}</span>`},
-    {h:'<span class="o-red">이름이 정확한지 확인하고 경로가 포함된 경우 경로가 올바른지 검증한 다음 다시 시도하십시오.</span>'},
-    {h:'<span class="o-red">위치 줄:1 문자:1</span>'},{h:""});
-}
+let toastEl = null;
 function toast(msg){
-  const el = document.createElement("div");
-  el.className = "hint"; el.style.cssText = "position:fixed; right:20px; bottom:20px; z-index:99; font-family:'JetBrains Mono',monospace";
-  el.textContent = msg; document.body.appendChild(el);
-  setTimeout(() => el.remove(), 2200);
+  if (toastEl) toastEl.remove();
+  toastEl = document.createElement("div");
+  toastEl.className = "toast"; toastEl.textContent = msg;
+  document.body.appendChild(toastEl);
+  const el = toastEl;
+  setTimeout(() => { if (el === toastEl) { el.remove(); toastEl = null; } }, 2600);
 }
 
-// ---------------------------------------------------------------- boot
+// ============================================================ boot
 function render(){ renderTabs(); renderTree(); renderPanes(); }
 document.addEventListener("keydown", e => {
-  if (e.key === "F2" && document.activeElement === ghost){ e.preventDefault(); renameTab(state.active); }
+  if (e.key === "F2" && document.activeElement === ghost){ e.preventDefault(); renameTab(S.focusedTerm); }
 });
 applyTheme("tokyonight");
 applyLayout("ide");
+document.querySelectorAll("#maxv .chip").forEach(x => x.setAttribute("aria-pressed", String(Number(x.dataset.n)===S.maxVisible)));
+render();
 </script>
 </body>
 </html>
