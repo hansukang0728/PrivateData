@@ -20,6 +20,7 @@ const DEFAULT_CMDS = () => (S.platform === "win32"
 const S = {
   layout: "ide", theme: "tokyonight", maxVisible: 3, fontSize: FS_DEF, expHidden: false,
   expWidth: 250, cmds: null, bcast: false,
+  fontFamily: null, lineHeight: 1.2,
   groups: [], terms: {}, activeGroup: null, focusedTerm: null,
   home: "", platform: "win32", defaultShell: "pwsh"
 };
@@ -50,6 +51,7 @@ function paneOf(t) {
   if (p) return p;
   p = createPane(t, {
     fontSize: () => S.fontSize, theme: () => xtermTheme(THEMES[S.theme]),
+    fontFamily: () => fontOf(), lineHeight: () => S.lineHeight,
     isWindows: () => S.platform === "win32", isShortcut,
     onFocus: id => focus(id),
     onState: id => { updateHead(id); renderTabs(); updateStatus(); }
@@ -336,10 +338,38 @@ $("#panes").addEventListener("dblclick", e => {
   renamePane(nm.closest(".pane").dataset.id);
 });
 $("#panes").addEventListener("contextmenu", e => {
-  const head = e.target.closest(".pane-head"); if (!head) return;
-  e.preventDefault();
-  paneMenu(head.closest(".pane").dataset.id, e.clientX, e.clientY);
+  const head = e.target.closest(".pane-head");
+  if (head) { e.preventDefault(); paneMenu(head.closest(".pane").dataset.id, e.clientX, e.clientY); return; }
+  const host = e.target.closest(".host");
+  if (host) { e.preventDefault(); termMenu(host.closest(".pane").dataset.id, e.clientX, e.clientY); }
 });
+
+// 터미널 본문 우클릭 — 복사·붙여넣기
+function termMenu(id, x, y) {
+  const p = panes.get(id); if (!p) return;
+  const sel = p.term.getSelection();
+  showMenu(x, y, [
+    { i: "&#128203;", t: "복사", k: "Ctrl+C", dis: !sel,
+      act: () => { navigator.clipboard?.writeText(sel).then(() => toast("복사했습니다")); } },
+    { i: "&#128204;", t: "붙여넣기", k: "Ctrl+V", hot: true, act: () => pasteInto(id) },
+    { sep: 1 },
+    { i: "&#9776;", t: "전체 선택", k: "Ctrl+Shift+A", act: () => p.term.selectAll() },
+    { i: "&#8981;", t: "찾기", k: "Ctrl+F", act: () => { focus(id); openFind(); } },
+    { sep: 1 },
+    { i: "&#9003;", t: "화면 지우기", act: () => { p.term.clear(); focus(id); } },
+    { i: "&#128465;", t: "스크롤백까지 비우기", act: () => { conn.send({ t: "in", id, d: "\u000c" }); p.term.clear(); focus(id); } }
+  ]);
+}
+
+async function pasteInto(id) {
+  try {
+    const text = await navigator.clipboard.readText();
+    if (text) conn.send({ t: "in", id, d: text });
+    focus(id);
+  } catch {
+    toast("브라우저가 클립보드 읽기를 막았습니다 — 터미널을 클릭하고 Ctrl+V 를 쓰세요");
+  }
+}
 $("#panes").addEventListener("wheel", e => {
   if (!e.ctrlKey) return;
   const pane = e.target.closest(".pane"); if (!pane) return;
@@ -544,6 +574,56 @@ function themeMenu(x, y) {
 $("#btnTheme").addEventListener("click", e => { const r = e.target.getBoundingClientRect(); themeMenu(r.left - 150, r.bottom + 4); });
 $("#railTheme").addEventListener("click", e => { const r = e.target.getBoundingClientRect(); themeMenu(r.right + 6, r.top); });
 
+const FONTS = [
+  { n: "Cascadia Mono", f: '"Cascadia Mono", monospace' },
+  { n: "Cascadia Code", f: '"Cascadia Code", monospace' },
+  { n: "Consolas", f: 'Consolas, monospace' },
+  { n: "D2Coding", f: 'D2Coding, monospace' },
+  { n: "나눔고딕코딩", f: '"NanumGothicCoding", "나눔고딕코딩", monospace' },
+  { n: "JetBrains Mono", f: '"JetBrains Mono", monospace' },
+  { n: "Fira Code", f: '"Fira Code", monospace' },
+  { n: "맑은 고딕", f: '"Malgun Gothic", "맑은 고딕", monospace' },
+  { n: "Courier New", f: '"Courier New", monospace' }
+];
+const FALLBACK = ', "Cascadia Mono", Consolas, D2Coding, ui-monospace, monospace';
+
+function fontOf() { return (S.fontFamily || '"Cascadia Mono"') + FALLBACK; }
+
+function installed(name) {
+  try { return document.fonts.check(`12px "${name}"`); } catch { return true; }
+}
+
+function applyFont() {
+  panes.forEach(p => {
+    p.term.options.fontFamily = fontOf();
+    p.term.options.lineHeight = S.lineHeight;
+    p.refit();
+  });
+}
+
+function fontMenu(x, y) {
+  const cur = S.fontFamily || '"Cascadia Mono"';
+  showMenu(x, y, [
+    { cap: "글꼴 — 설치돼 있지 않으면 흐리게" },
+    ...FONTS.map(f => ({
+      t: (f.f === cur ? "● " : "　") + f.n + (installed(f.n) ? "" : "  (없음)"),
+      dis: false,
+      act: () => { S.fontFamily = f.f; applyFont(); save(); toast("글꼴: " + f.n); }
+    })),
+    { i: "&#9998;", t: "직접 입력…", act: () => {
+      const v = prompt("글꼴 이름을 입력하세요 (예: D2Coding)", "");
+      if (v && v.trim()) { S.fontFamily = `"${v.trim()}"`; applyFont(); save(); }
+    } },
+    { sep: 1 },
+    { cap: "줄 간격" },
+    ...[1.0, 1.1, 1.2, 1.35, 1.5].map(h => ({
+      t: (Math.abs(h - S.lineHeight) < 0.01 ? "● " : "　") + h.toFixed(2),
+      act: () => { S.lineHeight = h; applyFont(); save(); }
+    }))
+  ]);
+}
+$("#btnFont").addEventListener("click", e => { const r = e.target.getBoundingClientRect(); fontMenu(r.left - 170, r.bottom + 4); });
+
 function setFont(delta, absolute) {
   S.fontSize = Math.max(FS_MIN, Math.min(FS_MAX, absolute !== undefined ? absolute : S.fontSize + delta));
   Object.values(S.terms).forEach(t => { t.fs = null; panes.get(t.id)?.setFont(S.fontSize); });
@@ -701,6 +781,7 @@ function save() {
     api.saveWs({
       v: 1, theme: S.theme, layout: app.dataset.layout, maxVisible: S.maxVisible, fontSize: S.fontSize,
       expHidden: S.expHidden, expWidth: S.expWidth, cmds: S.cmds, bcast: S.bcast,
+      fontFamily: S.fontFamily, lineHeight: S.lineHeight,
       explorerRoot: explorer.root, activeGroup: S.activeGroup,
       groups: S.groups.map(g => ({ ...g })), terms
     }).catch(() => {});
@@ -714,6 +795,8 @@ function restore(w) {
   S.fontSize = w.fontSize || S.fontSize;
   S.expHidden = !!w.expHidden;
   S.expWidth = w.expWidth || S.expWidth;
+  S.fontFamily = w.fontFamily || S.fontFamily;
+  S.lineHeight = w.lineHeight || S.lineHeight;
   if (Array.isArray(w.cmds)) S.cmds = w.cmds;
   S.bcast = !!w.bcast;
   for (const t of Object.values(w.terms)) {

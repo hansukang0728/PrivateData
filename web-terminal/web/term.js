@@ -10,9 +10,9 @@ export function createPane(t, hooks) {
   const host = el.querySelector(".host");
 
   const term = new Terminal({
-    fontFamily: '"Cascadia Mono", "JetBrains Mono", D2Coding, Consolas, ui-monospace, monospace',
+    fontFamily: hooks.fontFamily(),
     fontSize: t.fs || hooks.fontSize(),
-    lineHeight: 1.2,
+    lineHeight: hooks.lineHeight(),
     cursorBlink: true,
     scrollback: 10000,
     allowProposedApi: true,
@@ -34,7 +34,17 @@ export function createPane(t, hooks) {
 
   term.onData(d => conn.send({ t: "in", id: t.id, d }));
   term.onResize(({ cols, rows }) => conn.send({ t: "resize", id: t.id, cols, rows }));
-  term.attachCustomKeyEventHandler(ev => !hooks.isShortcut(ev));   // 앱 단축키는 셸로 내려보내지 않는다
+  term.attachCustomKeyEventHandler(ev => {
+    if (ev.type === "keydown" && ev.ctrlKey && !ev.altKey) {
+      const k = ev.key.toLowerCase();
+      // 터미널에서 Ctrl+V 는 원래 제어문자(^V)다. 브라우저 기본 붙여넣기에 넘긴다.
+      if (k === "v") return false;
+      // 선택된 게 있으면 Ctrl+C 는 복사, 없으면 그대로 ^C(중단)
+      if (k === "c" && term.hasSelection()) return false;
+      if (k === "a" && ev.shiftKey) { term.selectAll(); return false; }
+    }
+    return !hooks.isShortcut(ev);                                  // 앱 단축키는 셸로 내려보내지 않는다
+  });
   el.addEventListener("mousedown", () => hooks.onFocus(t.id));
 
   let spawned = false;
